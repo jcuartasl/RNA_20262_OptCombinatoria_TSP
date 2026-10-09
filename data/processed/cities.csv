@@ -1,0 +1,48 @@
+id,name,province,community,lat,lon,source
+0,A Coruña,A Coruña,Galicia,43.3623,-8.4115,IGN / OpenStreetMap
+1,Albacete,Albacete,Castilla-La Mancha,38.9943,-1.8585,IGN / OpenStreetMap
+2,Alicante,Alicante,Comunitat Valenciana,38.3452,-0.481,IGN / OpenStreetMap
+3,Almería,Almería,Andalucía,36.8381,-2.4597,IGN / OpenStreetMap
+4,Ávila,Ávila,Castilla y León,40.6565,-4.6818,IGN / OpenStreetMap
+5,Badajoz,Badajoz,Extremadura,38.8794,-6.9707,IGN / OpenStreetMap
+6,Barcelona,Barcelona,Cataluña,41.3851,2.1734,IGN / OpenStreetMap
+7,Bilbao,Bizkaia,País Vasco,43.263,-2.935,IGN / OpenStreetMap
+8,Burgos,Burgos,Castilla y León,42.344,-3.6969,IGN / OpenStreetMap
+9,Cáceres,Cáceres,Extremadura,39.4753,-6.3723,IGN / OpenStreetMap
+10,Cádiz,Cádiz,Andalucía,36.5271,-6.2886,IGN / OpenStreetMap
+11,Castellón de la Plana,Castellón,Comunitat Valenciana,39.9864,-0.0513,IGN / OpenStreetMap
+12,Ciudad Real,Ciudad Real,Castilla-La Mancha,38.9861,-3.9274,IGN / OpenStreetMap
+13,Córdoba,Córdoba,Andalucía,37.8882,-4.7794,IGN / OpenStreetMap
+14,Cuenca,Cuenca,Castilla-La Mancha,40.0704,-2.1374,IGN / OpenStreetMap
+15,Girona,Girona,Cataluña,41.9794,2.8214,IGN / OpenStreetMap
+16,Granada,Granada,Andalucía,37.1773,-3.5986,IGN / OpenStreetMap
+17,Guadalajara,Guadalajara,Castilla-La Mancha,40.6337,-3.1674,IGN / OpenStreetMap
+18,Huelva,Huelva,Andalucía,37.2614,-6.9447,IGN / OpenStreetMap
+19,Huesca,Huesca,Aragón,42.1362,-0.4087,IGN / OpenStreetMap
+20,Jaén,Jaén,Andalucía,37.7796,-3.7849,IGN / OpenStreetMap
+21,León,León,Castilla y León,42.5987,-5.5671,IGN / OpenStreetMap
+22,Lleida,Lleida,Cataluña,41.6176,0.62,IGN / OpenStreetMap
+23,Logroño,La Rioja,La Rioja,42.4658,-2.4499,IGN / OpenStreetMap
+24,Lugo,Lugo,Galicia,43.0125,-7.5558,IGN / OpenStreetMap
+25,Madrid,Madrid,Comunidad de Madrid,40.4168,-3.7038,IGN / OpenStreetMap
+26,Málaga,Málaga,Andalucía,36.7213,-4.4214,IGN / OpenStreetMap
+27,Murcia,Murcia,Región de Murcia,37.9922,-1.1307,IGN / OpenStreetMap
+28,Ourense,Ourense,Galicia,42.3358,-7.8639,IGN / OpenStreetMap
+29,Oviedo,Asturias,Principado de Asturias,43.3619,-5.8494,IGN / OpenStreetMap
+30,Palencia,Palencia,Castilla y León,42.0095,-4.5288,IGN / OpenStreetMap
+31,Pamplona,Navarra,Comunidad Foral de Navarra,42.8125,-1.6458,IGN / OpenStreetMap
+32,Pontevedra,Pontevedra,Galicia,42.431,-8.6444,IGN / OpenStreetMap
+33,Salamanca,Salamanca,Castilla y León,40.9701,-5.6635,IGN / OpenStreetMap
+34,San Sebastián,Gipuzkoa,País Vasco,43.3183,-1.9812,IGN / OpenStreetMap
+35,Santander,Cantabria,Cantabria,43.4647,-3.8044,IGN / OpenStreetMap
+36,Segovia,Segovia,Castilla y León,40.9429,-4.1088,IGN / OpenStreetMap
+37,Sevilla,Sevilla,Andalucía,37.3891,-5.9845,IGN / OpenStreetMap
+38,Soria,Soria,Castilla y León,41.764,-2.4688,IGN / OpenStreetMap
+39,Tarragona,Tarragona,Cataluña,41.1189,1.2445,IGN / OpenStreetMap
+40,Teruel,Teruel,Aragón,40.3456,-1.1072,IGN / OpenStreetMap
+41,Toledo,Toledo,Castilla-La Mancha,39.8628,-4.0273,IGN / OpenStreetMap
+42,Valencia,Valencia,Comunitat Valenciana,39.4699,-0.3763,IGN / OpenStreetMap
+43,Valladolid,Valladolid,Castilla y León,41.6523,-4.7245,IGN / OpenStreetMap
+44,Vitoria-Gasteiz,Álava,País Vasco,42.8469,-2.6716,IGN / OpenStreetMap
+45,Zamora,Zamora,Castilla y León,41.5063,-5.7446,IGN / OpenStreetMap
+46,Zaragoza,Zaragoza,Aragón,41.6488,-0.8891,IGN / OpenStreetMap
