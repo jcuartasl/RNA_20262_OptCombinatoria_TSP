@@ -7,6 +7,11 @@ __pycache__/
 .pytest_cache/
 
 # Environments
+@'
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
 .venv/
 venv/
 env/
@@ -14,3 +19,6 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+.DS_Store
+Thumbs.db
+'@ | Set-Content .gitignore -Encoding utf8
