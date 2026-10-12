@@ -1,0 +1,6 @@
+id,name,lat,lon,source
+0,Madrid,40.4168,-3.7038,IGN / OpenStreetMap
+1,Barcelona,41.3851,2.1734,IGN / OpenStreetMap
+2,Valencia,39.4699,-0.3763,IGN / OpenStreetMap
+3,Sevilla,37.3891,-5.9845,IGN / OpenStreetMap
+4,Zaragoza,41.6488,-0.8891,IGN / OpenStreetMap
