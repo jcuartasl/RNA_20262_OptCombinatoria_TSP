@@ -45,11 +45,12 @@ def correr_benchmark(optimizers, components, hourly_values, seeds, budget):
 
 
 def resumir(runs):
-    """Estadísticas por optimizador y valor horario: costo, tiempo de cómputo y componentes medios."""
+    """Estadísticas por optimizador y valor horario: costo, tiempo de cómputo y componentes (media y desv.)."""
     g = pd.DataFrame(runs).groupby(["optimizer", "hourly_value_eur"], sort=False)
     out = g["best_cost"].agg(n_runs="count", mean_cost="mean", std_cost="std", min_cost="min", max_cost="max")
     out = out.join(g["elapsed_s"].agg(mean_elapsed_s="mean", std_elapsed_s="std"))
-    return out.join(g[["time_h", "toll_eur", "fuel_eur"]].mean().add_prefix("mean_")).reset_index()
+    parts = g[["time_h", "toll_eur", "fuel_eur"]]
+    return out.join(parts.mean().add_prefix("mean_")).join(parts.std().add_prefix("std_")).reset_index()
 
 
 def datos_maquina():
