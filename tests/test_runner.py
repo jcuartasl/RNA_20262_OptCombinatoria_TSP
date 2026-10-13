@@ -10,8 +10,11 @@ import pytest
 import yaml
 
 from src.costs.vehicle import PendingDataError
+from src.experiments import benchmark
 from src.experiments.run_tsp import cargar_componentes, correr, leer_yaml, main
+from src.data.road_matrix import load_cities
 from src.optimizers.common import BaseOptimizer, route_cost
+from src.visualization import animation, map_routes
 
 FIXTURES = Path(__file__).resolve().parents[1] / "data" / "fixtures"
 VEHICLE = {"model": "Vehículo ficticio SOLO PARA TESTS", "fuel_type": "gasolina 95",
@@ -131,3 +134,175 @@ def test_peajes_pendientes(tmp_path, sin_red):
     rec = json.loads((out / "aco_v15_seed3.json").read_text(encoding="utf-8"))
     assert rec["toll_policy"] == "provisional_zero" and rec["provisional_tolls"] is True
     assert rec["tolls_complete"] is False
+
+
+def test_curva_compacta():
+    costs = [100.0, 100.0, 90.0, 90.0, 80.0, 80.0]
+    history = [{"evaluations": 10 * (i + 1), "best_cost": c} for i, c in enumerate(costs)]
+    assert benchmark.curva_compacta(history) == [[10, 100.0], [30, 90.0], [50, 80.0], [60, 80.0]]
+
+
+def test_benchmark_misma_matriz_y_budget(tmp_path):
+    vistos = []
+
+    class Espia(MockOptimizer):
+        """SOLO PARA TESTS: registra la matriz y el budget que recibe."""
+
+        @classmethod
+        def optimize(cls, cost_matrix, seed, budget, config=None):
+            vistos.append((cls.name, cost_matrix.copy(), budget))
+            return super().optimize(cost_matrix, seed, budget, config)
+
+    a, b = type("EspiaA", (Espia,), {"name": "a"}), type("EspiaB", (Espia,), {"name": "b"})
+    comps = cargar_componentes(leer_yaml(crear_config(tmp_path)), "error")
+    runs = benchmark.correr_benchmark({"a": (a, {}), "b": (b, {})}, comps, [10.0, 40.0], [0, 1], 30)
+    assert len(runs) == len(vistos) == 8
+    for (_, cm_a, budget_a), (_, cm_b, budget_b) in zip(vistos[:4], vistos[4:]):
+        assert np.array_equal(cm_a, cm_b) and budget_a == budget_b == 30
+
+
+def test_benchmark_flags_curva_y_resumen(tmp_path, sin_red):
+    benchmark.main(["--config", str(crear_config(tmp_path)), "--seeds", "0", "1", "--hourly_values", "10", "40",
+                    "--budget", "150", "--out", str(tmp_path)])
+    data = json.loads((tmp_path / "raw" / "benchmark_runs.json").read_text(encoding="utf-8"))
+    assert (data["seeds"], data["hourly_values_eur"], data["budget"]) == ([0, 1], [10.0, 40.0], 150)
+    assert set(data["machine"]) == {"os", "processor", "python"} and data["dataset"]["version"] == "toy"
+    assert data["toll_policy"] == "error" and data["provisional_tolls"] is False
+    runs = data["runs"]
+    assert sorted((r["optimizer"], r["hourly_value_eur"], r["seed"]) for r in runs) == sorted(
+        (o, v, s) for o in ("aco", "genetic") for v in (10.0, 40.0) for s in (0, 1))
+    for r in runs:
+        assert "history" not in r and 0 < r["evaluations"] <= 150 and sorted(r["route"]) == list(range(5))
+        evals, costs = zip(*r["curve"])
+        assert list(evals) == sorted(evals) and all(x >= y for x, y in zip(costs, costs[1:]))
+        # si el zip de sweep con las curvas se desalineara, la curva no terminaría en el best_cost de su fila
+        assert r["curve"][-1] == [r["evaluations"], r["best_cost"]]
+    summary = pd.read_csv(tmp_path / "summary" / "benchmark_summary.csv")
+    assert len(summary) == 4 and (summary["n_runs"] == 2).all()
+    for _, s in summary.iterrows():
+        costs = [r["best_cost"] for r in runs
+                 if (r["optimizer"], r["hourly_value_eur"]) == (s["optimizer"], s["hourly_value_eur"])]
+        assert (s["mean_cost"], s["min_cost"], s["max_cost"]) == pytest.approx(
+            (np.mean(costs), min(costs), max(costs)))
+        assert s["std_cost"] == pytest.approx(np.std(costs, ddof=1))
+
+
+def test_mapa_desde_run_tsp(tmp_path, sin_red):
+    main(["--optimizer", "aco", "--config", str(crear_config(tmp_path)), "--budget", "60",
+          "--out", str(tmp_path / "raw")])
+    map_routes.main(["--results", str(tmp_path / "raw" / "aco_v15_seed3.json"), "--out", str(tmp_path / "fig")])
+    assert (tmp_path / "fig" / "route_aco_v15_seed3.png").stat().st_size > 0
+
+
+def test_figura_titulo_aviso_y_ciclo(tmp_path):
+    _, rec = correr_mock(tmp_path)
+    fig = map_routes.dibujar_ruta(rec, load_cities(str(tmp_path / "data")))
+    ax = fig.axes[0]
+    assert "v = 15 €/h" in ax.get_title() and f"{rec['best_cost']:.2f} €" in ax.get_title()
+    assert map_routes.AVISO in [t.get_text() for t in fig.texts]
+    assert "MOCK" in fig._suptitle.get_text()
+    xs, ys = ax.lines[0].get_data()
+    assert len(xs) == 6 and (xs[0], ys[0]) == (xs[-1], ys[-1])
+
+
+def test_etiquetas_ids_con_nombres_al_margen(tmp_path):
+    _, rec = correr_mock(tmp_path)
+    fig = map_routes.dibujar_ruta(rec, load_cities(str(tmp_path / "data")), labels="ids")
+    assert [t.get_text() for t in fig.axes[0].texts] == ["0", "1", "2", "3", "4"]
+    assert any("Madrid" in t.get_text() for t in fig.texts)
+
+
+def test_trazar_ruta_actualiza_sin_crear_artistas(tmp_path):
+    crear_config(tmp_path)
+    cities = load_cities(str(tmp_path / "data"))
+    fig = map_routes.plt.figure()
+    ax = fig.add_subplot()
+    artists = map_routes.trazar_ruta(ax, [0, 1, 2, 3, 4], cities)
+    n_lines = len(ax.lines)
+    assert map_routes.trazar_ruta(ax, [0, 2, 4, 1, 3], cities, artists) is artists and len(ax.lines) == n_lines
+    assert list(artists["line"].get_xdata()) == cities["lon"].to_numpy()[[0, 2, 4, 1, 3, 0]].tolist()
+
+
+def test_mapa_elige_corrida_del_benchmark(tmp_path, sin_red):
+    benchmark.main(["--config", str(crear_config(tmp_path)), "--seeds", "0", "1", "--hourly_values", "10",
+                    "--budget", "150", "--out", str(tmp_path)])
+    path = tmp_path / "raw" / "benchmark_runs.json"
+    rec = map_routes.cargar_registro(path, "genetic", 10.0, 1)
+    assert (rec["optimizer"], rec["seed"]) == ("genetic", 1) and rec["best_route"] == rec["route"]
+    runs = [r for r in json.loads(path.read_text(encoding="utf-8"))["runs"] if r["optimizer"] == "genetic"]
+    assert map_routes.cargar_registro(path, "genetic", 10.0)["best_cost"] == min(r["best_cost"] for r in runs)
+    with pytest.raises(ValueError, match="No hay corridas"):
+        map_routes.cargar_registro(path, "aco", 99.0)
+
+
+def test_mapa_rechaza_ciudades_distintas(tmp_path):
+    _, rec = correr_mock(tmp_path)
+    rec = {**rec, "experiment_config": {"dataset": {"directory": str(tmp_path / "data")}},
+           "city_names": rec["city_names"][::-1]}
+    with pytest.raises(ValueError, match="no coinciden"):
+        map_routes.cargar_ciudades(rec)
+
+
+def prohibir_optimizar(monkeypatch):
+    """Se llama después de generar el JSON: desde ahí, cualquier optimize hace fallar el test."""
+    monkeypatch.setattr(BaseOptimizer, "optimize", classmethod(lambda *a, **k: pytest.fail("reoptimizó")))
+
+
+def history_sintetico(costs):
+    return [{"step": i, "evaluations": 10 * (i + 1), "best_cost": c, "best_route": [0, 1, 2, 3, 4]}
+            for i, c in enumerate(costs)]
+
+
+def test_seleccionar_pasos_mejoras_y_paso_final():
+    h = history_sintetico([100.0, 100.0, 90.0, 80.0, 80.0])
+    assert [s["step"] for s in animation.seleccionar_pasos(h, 40)] == [0, 2, 3, 4]
+
+
+def test_seleccionar_pasos_submuestrea_con_extremos():
+    h = history_sintetico([100.0 - i for i in range(30)])
+    steps = animation.seleccionar_pasos(h, 7)
+    assert len(steps) == 7 and steps[0] is h[0] and steps[-1] is h[-1]
+    assert len({s["step"] for s in steps}) == 7
+    with pytest.raises(ValueError):
+        animation.seleccionar_pasos(h, 1)
+
+
+def test_texto_cuadro():
+    step = {"evaluations": 12345, "best_cost": 1830.614}
+    assert animation.texto_cuadro(step, 50000, 3, 9) == "evaluaciones 12 345 / 50 000 | costo 1830.61 € | cuadro 3 de 9"
+
+
+def test_gif_desde_history_sin_reoptimizar(tmp_path, sin_red, monkeypatch):
+    main(["--optimizer", "aco", "--config", str(crear_config(tmp_path)), "--budget", "200",
+          "--out", str(tmp_path / "raw")])
+    prohibir_optimizar(monkeypatch)
+    src = tmp_path / "raw" / "aco_v15_seed3.json"
+    rec = json.loads(src.read_text(encoding="utf-8"))
+    n = len(animation.seleccionar_pasos(rec["history"], 40))
+    animation.main(["--results", str(src), "--fps", "5", "--hold_s", "2", "--out", str(tmp_path / "gifs")])
+    with animation.Image.open(tmp_path / "gifs" / "aco_v15_seed3.gif") as gif:
+        assert gif.n_frames == n
+        durations = []
+        for i in range(gif.n_frames):
+            gif.seek(i)
+            durations.append(gif.info["duration"])
+    assert durations[-1] == 2000 and set(durations[:-1]) <= {200}
+
+
+def test_gif_submuestrea_hasta_max_frames(tmp_path, sin_red, monkeypatch):
+    _, rec = correr_mock(tmp_path)
+    prohibir_optimizar(monkeypatch)
+    rec = {**rec, "history": history_sintetico([100.0 - i for i in range(30)])}  # 30 mejoras
+    frames, durations = animation.animar(rec, load_cities(str(tmp_path / "data")), max_frames=3, hold_s=1.5)
+    assert len(frames) == len(durations) == 3 and durations[-1] == 1500
+    assert frames[0].size == (800, 640)
+
+
+def test_gif_rechaza_benchmark_y_json_sin_history(tmp_path, sin_red):
+    benchmark.main(["--config", str(crear_config(tmp_path)), "--seeds", "0", "--hourly_values", "10",
+                    "--budget", "100", "--out", str(tmp_path)])
+    with pytest.raises(ValueError, match="benchmark_runs.json no guarda el history"):
+        animation.cargar_history(tmp_path / "raw" / "benchmark_runs.json")
+    (tmp_path / "vacio.json").write_text(json.dumps({"best_route": [0, 1]}), encoding="utf-8")
+    with pytest.raises(ValueError, match="no trae history"):
+        animation.cargar_history(tmp_path / "vacio.json")
