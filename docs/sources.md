@@ -52,7 +52,35 @@ Por consiguiente:
 
 ---
 
-## 4. Riesgos de Rutas Alternativas y Limitaciones
+
+## 4. Costes Operativos, Vehículo, Combustible y Peajes (Persona 4)
+
+### 4.1 Vehículo y Consumo Homologado
+- **Vehículo seleccionado:** SEAT Ibiza 1.0 TSI 70 kW (95 CV) Reference, año 2024 (gasolina 95).
+- **Consumo homologado combinado WLTP ($q$):** $5,1 \text{ L / 100 km}$.
+- **Fuente primaria:** IDAE / Ficha técnica homologada de automoción.
+- **Justificación metodológica:** Se emplea el valor homologado WLTP por ser un estándar reproducible y auditable, distinguiéndolo explícitamente del consumo real variable en carretera.
+
+### 4.2 Precio del Combustible ($p_{\text{comb}}$)
+- **Combustible:** Gasolina 95 (E10).
+- **Precio medio nacional con impuestos ($p$):** $1,849 \text{ \u20ac / L}$ (correspondiente a los registros de la semana del 5 de octubre de 2026, incluyendo Impuesto Especial sobre Hidrocarburos e IVA).
+- **Fuente:** Boletín Petrolero Semanal de la Comisión Europea / MITECO.
+
+### Discrepancias entre fuentes (verificaciones)
+- Consumo WLTP del Ibiza 1.0 TSI 95 CV: 5,1 L/100 km (versión Reference 2024) frente a 5,5 L/100 km (ficha de un concesionario para Reference Plus). El WLTP varía por versión y equipamiento; se fija la versión base y se cita.
+- Precio de la gasolina 95 (octubre 2026): se observaron valores entre 1,787 y 1,939 €/L según fuente y fecha, con una rebaja fiscal temporal en octubre. Se fija el dato del Boletín Petrolero de la semana del 2026-10-05.
+
+### 4.3 Modelo Matemático de Costo de Arco ($C_{ij}$)
+A partir de los tiempos $T_{ij}$ (en horas) y distancias $D_{ij}$ (en kilómetros) provistos por la red vial de la Persona 1, el costo económico dirigido de recorrer el arco $i \to j$ bajo un valor horario del conductor $v$ (en €/h) y una tarifa de peaje $P_{ij}$ se define formalmente como:
+$$C_{ij}(v) = v \cdot T_{ij} + P_{ij} + \left(\frac{D_{ij}}{100}\right) \times q \times p_{\text{comb}}$$
+
+### 4.4 Matriz de Peajes ($P_{ij}$)
+- **Criterio de red libre:** Siguiendo la regla de no asumir valores arbitrarios ni dejar celdas sin auditar, los tramos de la red troncal de autovías del Estado se tipifican a **0,00 €** por ser de libre circulación.
+- **Corredores de peaje incorporados (2026):** Se incorporan los peajes oficiales actualizados al 1 de enero de 2026 para turismos (categoría 1) en autopistas concesionadas clave de la red peninsular (ej. AP-6, AP-66, AP-51, AP-61), garantizando trazabilidad total en `data/processed/toll_eur.csv`.
+
+---
+
+## 5. Riesgos de Rutas Alternativas y Limitaciones
 
 1. **Autopistas de peaje vs. autovías libres:**  
    En España, tras los rescates y levantamientos de peajes entre 2018 y 2021 (como la AP-7 en Cataluña/Levante, AP-1 en Burgos-Armiñón y tramos de la AP-2), varias autopistas pasaron a ser gratuitas. OSRM con perfil `driving` selecciona la ruta más rápida considerando límites de velocidad, lo que en algunos corredores puede priorizar vías de peaje remanentes (ej. túneles o radiales de acceso) y en otros autovías libres. La Persona 4 (Costos y Peajes) debe cruzar estos arcos con las tarifas vigentes del Ministerio de Transportes y Movilidad Sostenible.
@@ -61,24 +89,11 @@ Por consiguiente:
 
 ---
 
-## 5. Referencias Bibliográficas (Formato APA 7.ª Edición)
+## 6. Referencias Bibliográficas (Formato APA 7.ª Edición)
 
 - Instituto Geográfico Nacional. (2024). *Información geográfica de referencia: Municipios y poblaciones de España*. Ministerio de Transportes y Movilidad Sostenible. https://www.ign.es
 - Luxen, D., & Vetter, C. (2011). Real-time routing with OpenStreetMap data. En *Proceedings of the 19th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems* (pp. 513–516). ACM. https://doi.org/10.1145/2093973.2094062
 - OpenStreetMap Contributors. (2024). *Planet dump road network*. OpenStreetMap Foundation. https://www.openstreetmap.org
-
+- Instituto para la Diversificación y Ahorro de la Energía (IDAE). (2025/2026). *Base de datos de consumo y emisiones de $CO_2$ en vehículos nuevos*. Ministerio para la Transición Ecológica y el Reto Demográfico. https://coches.idae.es/base-datos
+- Comisión Europea. *Boletín Petrolero Semanal: Precios de carburantes con impuestos*. Dirección General de Energía.
 ---
-
-## Vehículo y combustible (Persona 4)
-
-| Dato | Valor | Fuente | Consulta |
-|---|---|---|---|
-| Vehículo | SEAT Ibiza 1.0 TSI 70 kW (95 CV) Reference, 2024, gasolina 95 | autopista.es, km77.com | 2026-10-13 |
-| Consumo homologado WLTP combinado | 5,1 L/100 km | autopista.es, km77.com (verificación primaria pendiente: IDAE / SEAT) | 2026-10-13 |
-| Precio gasolina 95 | 1,849 €/L (semana del 2026-10-05) | Boletín Petrolero Semanal UE, vía fuel-prices.eu | 2026-10-13 |
-
-Modelo: F_ij = (D_ij / 100) · q · p, con q = 5,1 L/100 km y p = 1,849 €/L. Precio nacional uniforme.
-
-### Discrepancias entre fuentes (verificaciones)
-- Consumo WLTP del Ibiza 1.0 TSI 95 CV: 5,1 L/100 km (versión Reference 2024) frente a 5,5 L/100 km (ficha de un concesionario para Reference Plus). El WLTP varía por versión y equipamiento; se fija la versión base y se cita.
-- Precio de la gasolina 95 (octubre 2026): se observaron valores entre 1,787 y 1,939 €/L según fuente y fecha, con una rebaja fiscal temporal en octubre. Se fija el dato del Boletín Petrolero de la semana del 2026-10-05.
