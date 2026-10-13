@@ -14,7 +14,7 @@ from src.experiments import benchmark
 from src.experiments.run_tsp import cargar_componentes, correr, leer_yaml, main
 from src.data.road_matrix import load_cities
 from src.optimizers.common import BaseOptimizer, route_cost
-from src.visualization import animation, map_routes
+from src.visualization import animation, map_routes, plots
 
 FIXTURES = Path(__file__).resolve().parents[1] / "data" / "fixtures"
 VEHICLE = {"model": "Vehículo ficticio SOLO PARA TESTS", "fuel_type": "gasolina 95",
@@ -185,6 +185,9 @@ def test_benchmark_flags_curva_y_resumen(tmp_path, sin_red):
         assert (s["mean_cost"], s["min_cost"], s["max_cost"]) == pytest.approx(
             (np.mean(costs), min(costs), max(costs)))
         assert s["std_cost"] == pytest.approx(np.std(costs, ddof=1))
+        group = [r for r in runs if (r["optimizer"], r["hourly_value_eur"]) == (s["optimizer"], s["hourly_value_eur"])]
+        for col in ("time_h", "toll_eur", "fuel_eur"):
+            assert s[f"std_{col}"] == pytest.approx(np.std([r[col] for r in group], ddof=1))
 
 
 def test_mapa_desde_run_tsp(tmp_path, sin_red):
@@ -306,3 +309,82 @@ def test_gif_rechaza_benchmark_y_json_sin_history(tmp_path, sin_red):
     (tmp_path / "vacio.json").write_text(json.dumps({"best_route": [0, 1]}), encoding="utf-8")
     with pytest.raises(ValueError, match="no trae history"):
         animation.cargar_history(tmp_path / "vacio.json")
+
+
+def benchmark_sintetico(tmp_path, n_seeds, values=(10.0, 40.0), budget=100):
+    """benchmark_runs.json y summary ficticios con costos conocidos (SOLO PARA TESTS)."""
+    runs = []
+    for opt in ("aco", "genetic"):
+        for v in values:
+            for s in range(n_seeds):
+                t, toll, fuel = 10.0 + s, 5.0, 20.0
+                cost = v * t + toll + fuel
+                runs.append({"optimizer": opt, "hourly_value_eur": v, "seed": s, "best_cost": cost, "time_h": t,
+                             "toll_eur": toll, "fuel_eur": fuel, "evaluations": budget, "route": [0, 1, 2, 3, 4],
+                             "elapsed_s": 0.1, "curve": [[5 + s, cost + 50], [20 + s, cost + 10], [budget, cost]]})
+    path, summary = tmp_path / f"runs_{n_seeds}.json", tmp_path / f"summary_{n_seeds}.csv"
+    path.write_text(json.dumps({"budget": budget, "hourly_values_eur": list(values), "provisional_tolls": False,
+                                "runs": runs}), encoding="utf-8")
+    benchmark.resumir(runs).to_csv(summary, index=False)
+    return path, summary
+
+
+def test_alinear_curvas_escalonadas():
+    x, y = plots.alinear_curvas([[[1, 10.0], [5, 6.0], [10, 6.0]], [[2, 9.0], [4, 7.0], [10, 3.0]]], 10)
+    assert x.tolist() == [2, 4, 5, 10]
+    assert y.tolist() == [[10.0, 10.0, 6.0, 6.0], [9.0, 7.0, 7.0, 3.0]]
+
+
+def test_tipo_banda_segun_seeds():
+    assert [plots.tipo_banda(n) for n in (1, 3, 6)] == [None, "min-max", "p25-p75"]
+
+
+@pytest.mark.parametrize("n_seeds", [2, 6])
+def test_figuras_nombres_titulos_y_pocas_seeds(tmp_path, sin_red, n_seeds):
+    path, summary = benchmark_sintetico(tmp_path, n_seeds)
+    plots.main(["--benchmark", str(path), "--summary", str(summary), "--hourly_value", "40", "--out",
+                str(tmp_path / "fig")])
+    for name in ("convergence_v40.png", "final_cost_boxplot.png", "cost_vs_v.png", "cost_breakdown_vs_v.png",
+                 "cost_diff_vs_v.png"):
+        assert (tmp_path / "fig" / name).stat().st_size > 0
+    data, runs, summ = plots.cargar_benchmark(path, summary)
+    figs = [plots.figura_convergencia(data, runs, 40.0), plots.figura_cajas(data, runs),
+            plots.figura_costo_v(data, summ), plots.figura_desglose(data, summ), plots.figura_diferencia(data, summ)]
+    for fig in figs:
+        title = fig._suptitle.get_text()
+        assert f"n = {n_seeds} seeds" in title and ("ilustrativo" in title) == (n_seeds < 5)
+        assert all("(" in ax.get_ylabel() for ax in fig.axes if ax.get_visible() and ax.get_ylabel())
+        # la diferencia es una sola serie: el título la nombra y no lleva leyenda
+        assert fig is figs[-1] or fig.legends or any(ax.get_legend() for ax in fig.axes)
+    legend = [t.get_text() for t in figs[0].axes[0].get_legend().get_texts()]
+    assert any(("percentiles 25–75" if n_seeds >= 5 else "mín–máx") in t for t in legend)
+    assert all((len(ax.lines) > 0) == (n_seeds >= 5) for ax in figs[1].axes if ax.get_visible())
+    for fig in figs:
+        plots.plt.close(fig)
+
+
+def test_figuras_rechazan_datos_inconsistentes(tmp_path):
+    path2, summary2 = benchmark_sintetico(tmp_path, 2)
+    _, summary6 = benchmark_sintetico(tmp_path, 6)
+    with pytest.raises(ValueError, match="no corresponde"):
+        plots.cargar_benchmark(path2, summary6)
+    bad = pd.read_csv(summary2)
+    bad.loc[0, "mean_cost"] += 1.0
+    bad.to_csv(tmp_path / "bad.csv", index=False)
+    with pytest.raises(ValueError, match="no cumple"):
+        plots.cargar_benchmark(path2, tmp_path / "bad.csv")
+    data, runs, _ = plots.cargar_benchmark(path2, summary2)
+    with pytest.raises(ValueError, match="No hay corridas con v=99"):
+        plots.figura_convergencia(data, runs, 99.0)
+
+
+def test_diferencia_medias_no_emparejada(tmp_path):
+    _, summary = benchmark_sintetico(tmp_path, 3)
+    summ = pd.read_csv(summary)
+    ga = summ["optimizer"] == "genetic"
+    summ.loc[ga, "mean_cost"] -= 30.0
+    summ.loc[ga, "std_cost"] *= 2
+    d = plots.diferencia_medias(summ).set_index("hourly_value_eur")
+    aco, gen = summ[~ga].set_index("hourly_value_eur"), summ[ga].set_index("hourly_value_eur")
+    assert d["diff"].tolist() == pytest.approx([-30.0, -30.0])
+    assert d["se"].tolist() == pytest.approx(np.sqrt(aco["std_cost"] ** 2 / 3 + gen["std_cost"] ** 2 / 3).tolist())

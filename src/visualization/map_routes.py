@@ -82,12 +82,15 @@ def titulo(record):
             f" | costo = {record['best_cost']:.2f} € | seed {record['seed']}")
 
 
+def avisos(record):
+    """Marcas de que la corrida no vale como resultado final (mock o peajes provisionales)."""
+    return [m for k, m in (("is_mock", "MOCK: SOLO PRUEBAS"), ("provisional_tolls", "PEAJES PROVISIONALES"))
+            if record.get(k)]
+
+
 def marcar_avisos(fig, record):
-    """Aviso en rojo si la corrida es un mock o usó peajes provisionales: nunca pasa por resultado final."""
-    marcas = [m for k, m in (("is_mock", "MOCK: SOLO PRUEBAS"), ("provisional_tolls", "PEAJES PROVISIONALES"))
-              if record.get(k)]
-    if marcas:
-        fig.suptitle(" | ".join(marcas), color="#c00", fontweight="bold")
+    if avisos(record):
+        fig.suptitle(" | ".join(avisos(record)), color="#c00", fontweight="bold")
 
 
 def dibujar_ruta(record, cities, labels="names"):
