@@ -66,3 +66,19 @@ Por consiguiente:
 - Instituto Geográfico Nacional. (2024). *Información geográfica de referencia: Municipios y poblaciones de España*. Ministerio de Transportes y Movilidad Sostenible. https://www.ign.es
 - Luxen, D., & Vetter, C. (2011). Real-time routing with OpenStreetMap data. En *Proceedings of the 19th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems* (pp. 513–516). ACM. https://doi.org/10.1145/2093973.2094062
 - OpenStreetMap Contributors. (2024). *Planet dump road network*. OpenStreetMap Foundation. https://www.openstreetmap.org
+
+---
+
+## Vehículo y combustible (Persona 4)
+
+| Dato | Valor | Fuente | Consulta |
+|---|---|---|---|
+| Vehículo | SEAT Ibiza 1.0 TSI 70 kW (95 CV) Reference, 2024, gasolina 95 | autopista.es, km77.com | 2026-10-13 |
+| Consumo homologado WLTP combinado | 5,1 L/100 km | autopista.es, km77.com (verificación primaria pendiente: IDAE / SEAT) | 2026-10-13 |
+| Precio gasolina 95 | 1,849 €/L (semana del 2026-10-05) | Boletín Petrolero Semanal UE, vía fuel-prices.eu | 2026-10-13 |
+
+Modelo: F_ij = (D_ij / 100) · q · p, con q = 5,1 L/100 km y p = 1,849 €/L. Precio nacional uniforme.
+
+### Discrepancias entre fuentes (verificaciones)
+- Consumo WLTP del Ibiza 1.0 TSI 95 CV: 5,1 L/100 km (versión Reference 2024) frente a 5,5 L/100 km (ficha de un concesionario para Reference Plus). El WLTP varía por versión y equipamiento; se fija la versión base y se cita.
+- Precio de la gasolina 95 (octubre 2026): se observaron valores entre 1,787 y 1,939 €/L según fuente y fecha, con una rebaja fiscal temporal en octubre. Se fija el dato del Boletín Petrolero de la semana del 2026-10-05.
