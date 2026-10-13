@@ -1,0 +1,20 @@
+# Configuración de costos y sensibilidad (Persona 4).
+# Fecha de consulta de todas las fuentes de este bloque: 2026-10-13.
+vehicle:
+  model: "SEAT Ibiza 1.0 TSI 70 kW (95 CV) Reference"
+  year: 2024
+  fuel_type: "gasolina 95 (sin plomo)"
+  consumption_l_per_100km: 5.1       # WLTP combinado, versión base
+  consumption_source: "autopista.es y km77.com, ficha técnica SEAT Ibiza 1.0 TSI 95 CV Reference (2024); consultado 2026-10-13. Verificación primaria: coches.idae.es / ficha SEAT"
+  fuel_price_eur_per_l: 1.849        # EUR/L, impuestos incluidos
+  fuel_price_source: "Boletín Petrolero Semanal de la UE (Comisión Europea), España, gasolina Euro-super 95; consultado vía fuel-prices.eu"
+  fuel_price_date: "2026-10-05"      # semana del dato; consulta realizada el 2026-10-13
+
+tolls:
+  policy: error                      # error | provisional_zero (solo pruebas, nunca resultados finales)
+
+sensitivity:
+  hourly_values_eur: [0, 5, 10, 15, 20, 30, 45, 60, 90, 120]
+  seeds: [0, 1, 2]
+  budget: 10000
+  optimizers: [aco, genetic]
