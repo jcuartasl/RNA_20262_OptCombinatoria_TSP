@@ -1,0 +1,11 @@
+# Demo de sustentación (< 2 min). Parámetros de ACO y GA en config/aco.yaml y config/genetic.yaml.
+dataset:
+  directory: data/processed
+vehicle_config: config/sensitivity.yaml   # vehículo y combustible con fuentes (Persona 4)
+tolls:
+  policy: error                           # error | provisional_zero (solo pruebas, nunca resultados finales)
+experiment:
+  hourly_values_eur: [15]                 # valor piloto, no viene del enunciado
+  seeds: [0, 1]
+  budget: 50000
+  optimizers: [aco, genetic]
