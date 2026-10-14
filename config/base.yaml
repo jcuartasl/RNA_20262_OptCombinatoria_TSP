@@ -1,0 +1,12 @@
+# Experimento completo (Persona 5). Parámetros de ACO y GA en config/aco.yaml y config/genetic.yaml.
+dataset:
+  directory: data/processed
+vehicle_config: config/sensitivity.yaml   # vehículo y combustible con fuentes (Persona 4)
+tolls:
+  policy: error                           # error | provisional_zero (solo pruebas, nunca resultados finales)
+experiment:
+  hourly_values_eur: [0, 5, 10, 15, 20, 30, 45, 60, 90, 120]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+          20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+  budget: 50000                           # medido a v=15: ACO ~5 s, GA ~3 s por corrida; 100000 no mejoró
+  optimizers: [aco, genetic]

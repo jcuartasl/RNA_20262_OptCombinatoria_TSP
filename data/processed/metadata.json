@@ -1,0 +1,23 @@
+{
+  "dataset_name": "47_mainland_spain_provincial_capitals_road_network",
+  "dataset_version": "1.0.0",
+  "dataset_hash_sha256_short": "e30063cc2c9856cb",
+  "query_date_utc": "2026-10-09T01:44:10.293986+00:00",
+  "source_provider": "Open Source Routing Machine (OSRM) Public API",
+  "routing_profile": "driving (car)",
+  "underlying_map_data": "OpenStreetMap contributors (ODbL)",
+  "endpoint_url": "http://router.project-osrm.org/table/v1/driving",
+  "dimension": 47,
+  "directed_pairs_count": 2162,
+  "distance_unit": "kilometers (km)",
+  "time_unit": "hours (h)",
+  "symmetry": "asymmetric (real road network driving times and distances)",
+  "diagonal": "0.0 (intra-city transition not valid)",
+  "exclusions_verified": [
+    "Palma (Illes Balears - insular)",
+    "Las Palmas de Gran Canaria (Canarias - insular)",
+    "Santa Cruz de Tenerife (Canarias - insular)",
+    "Ceuta (Ciudad Autónoma - no peninsular)",
+    "Melilla (Ciudad Autónoma - no peninsular)"
+  ]
+}
