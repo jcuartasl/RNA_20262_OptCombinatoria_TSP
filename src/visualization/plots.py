@@ -136,13 +136,17 @@ def figura_desglose(data, summary):
     span = summary["hourly_value_eur"].max() - summary["hourly_value_eur"].min()
     for ax, (col, label) in zip(axes, panels):
         for k, (opt, g) in enumerate(summary.groupby("optimizer", sort=False)):
+            std = g[col.replace("mean_", "std_")]
+            # horas, peajes y combustible no pueden ser negativos: la barra inferior se recorta en 0
             ax.errorbar(g["hourly_value_eur"] + (k - 0.5) * 0.01 * span, g[col],
-                        yerr=g[col.replace("mean_", "std_")] if n >= 2 else None, marker="o", ms=5, lw=2,
+                        yerr=[np.minimum(std, g[col]), std] if n >= 2 else None, marker="o", ms=5, lw=2,
                         capsize=3, color=COLORES[opt], label=NOMBRES.get(opt, opt))
         ax.set_xlabel("Valor de la hora v (€/h)")
         ax.set_ylabel(label)
         estilo(ax)
     axes[0].legend(fontsize=9)
+    fig.supxlabel("Las barras se recortan en 0 por abajo: un peaje (u horas, o combustible) no puede ser negativo.",
+                  fontsize=9, color=GRIS, style="italic")
     titular(fig, "Desglose de la ruta encontrada según v (media ± desv. estándar; las diferencias pequeñas pueden "
             f"ser variación entre seeds)\n{nota_seeds(n)}", data)
     return fig

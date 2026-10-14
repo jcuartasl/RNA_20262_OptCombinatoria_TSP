@@ -388,3 +388,15 @@ def test_diferencia_medias_no_emparejada(tmp_path):
     aco, gen = summ[~ga].set_index("hourly_value_eur"), summ[ga].set_index("hourly_value_eur")
     assert d["diff"].tolist() == pytest.approx([-30.0, -30.0])
     assert d["se"].tolist() == pytest.approx(np.sqrt(aco["std_cost"] ** 2 / 3 + gen["std_cost"] ** 2 / 3).tolist())
+
+
+def test_desglose_recorta_barras_en_cero(tmp_path):
+    path, summary = benchmark_sintetico(tmp_path, 3)
+    data, runs, summ = plots.cargar_benchmark(path, summary)
+    summ["std_toll_eur"] = 50.0  # desviación mayor que la media de peajes (5 €)
+    fig = plots.figura_desglose(data, summ)
+    for c in fig.axes[1].containers:
+        assert min(seg[:, 1].min() for seg in c.lines[2][0].get_segments()) >= 0
+        assert max(seg[:, 1].max() for seg in c.lines[2][0].get_segments()) == pytest.approx(55.0)
+    assert "recortan en 0" in fig._supxlabel.get_text()
+    plots.plt.close(fig)
