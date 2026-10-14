@@ -10,7 +10,7 @@ import pytest
 import yaml
 
 from src.costs.vehicle import PendingDataError
-from src.experiments import benchmark
+from src.experiments import benchmark, demo
 from src.experiments.run_tsp import cargar_componentes, correr, leer_yaml, main
 from src.data.road_matrix import load_cities
 from src.optimizers.common import BaseOptimizer, route_cost
@@ -400,3 +400,24 @@ def test_desglose_recorta_barras_en_cero(tmp_path):
         assert max(seg[:, 1].max() for seg in c.lines[2][0].get_segments()) == pytest.approx(55.0)
     assert "recortan en 0" in fig._supxlabel.get_text()
     plots.plt.close(fig)
+
+
+def test_demo_genera_todas_las_salidas(tmp_path, sin_red):
+    out = tmp_path / "demo"
+    demo.main(["--config", str(crear_config(tmp_path)), "--out", str(out)])
+    for name in ("raw/benchmark_runs.json", "raw/aco_v15_seed3.json", "summary/benchmark_summary.csv",
+                 "figures/route_aco_v15_seed3.png", "gifs/aco_v15_seed3.gif", "figures/convergence_v15.png",
+                 "figures/final_cost_boxplot.png", "figures/cost_vs_v.png", "figures/cost_breakdown_vs_v.png",
+                 "figures/cost_diff_vs_v.png"):
+        assert (out / name).stat().st_size > 0, name
+
+
+def test_demo_avisa_sin_fallar_si_se_pasa_del_limite(tmp_path, sin_red, monkeypatch, capsys):
+    monkeypatch.setattr(demo, "LIMITE_S", 0)
+    demo.main(["--config", str(crear_config(tmp_path)), "--out", str(tmp_path / "demo")])
+    assert "AVISO" in capsys.readouterr().out
+
+
+def test_demo_real_tarda_menos_de_dos_minutos(tmp_path, sin_red):
+    """Demo real (config/demo.yaml, 47 ciudades): el enunciado pide menos de 2 minutos."""
+    assert demo.correr_demo("config/demo.yaml", str(tmp_path / "demo")) < demo.LIMITE_S
