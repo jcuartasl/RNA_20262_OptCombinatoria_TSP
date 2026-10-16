@@ -2,6 +2,7 @@
 import json
 import shutil
 import socket
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -11,7 +12,8 @@ import yaml
 
 from src.costs.vehicle import PendingDataError
 from src.experiments import benchmark, demo
-from src.experiments.run_tsp import cargar_componentes, correr, leer_yaml, main
+from src.experiments.export import NOTA_TOLLS_COMPLETE, git_hash_object
+from src.experiments.run_tsp import ROOT, cargar_componentes, correr, leer_yaml, main
 from src.data.road_matrix import load_cities
 from src.optimizers.common import BaseOptimizer, route_cost
 from src.visualization import animation, map_routes, plots
@@ -421,3 +423,89 @@ def test_demo_avisa_sin_fallar_si_se_pasa_del_limite(tmp_path, sin_red, monkeypa
 def test_demo_real_tarda_menos_de_dos_minutos(tmp_path, sin_red):
     """Demo real (config/demo.yaml, 47 ciudades): el enunciado pide menos de 2 minutos."""
     assert demo.correr_demo("config/demo.yaml", str(tmp_path / "demo")) < demo.LIMITE_S
+
+
+def test_git_hash_object_valores_conocidos(tmp_path):
+    vacio, hola, crlf = tmp_path / "vacio", tmp_path / "hola", tmp_path / "crlf"
+    vacio.write_bytes(b"")
+    hola.write_bytes(b"hello\n")
+    crlf.write_bytes(b"hello\r\n")
+    # valores de `git hash-object` para un archivo vacío y para "hello\n"
+    assert git_hash_object(vacio) == "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    assert git_hash_object(hola) == "ce013625030ba8dba906f756967f9e9ca394464a"
+    assert git_hash_object(crlf) == git_hash_object(hola)  # CRLF -> LF, como git con core.autocrlf
+
+
+def test_git_hash_object_coincide_con_git_en_las_entradas_reales():
+    """Los cuatro archivos que identifican una corrida, contra `git hash-object` (si git está disponible)."""
+    git = shutil.which("git")
+    if git is None or not (ROOT / ".git").exists():
+        pytest.skip("se necesita git y un clon del repositorio")
+    for rel in ("data/processed/toll_eur.csv", "config/sensitivity.yaml", "config/aco.yaml", "config/genetic.yaml"):
+        esperado = subprocess.run([git, "hash-object", rel], cwd=ROOT, capture_output=True, text=True,
+                                  check=True).stdout.strip()
+        assert git_hash_object(ROOT / rel) == esperado, rel
+
+
+def hashes_esperados(cfg_path, *algo_files):
+    cfg = leer_yaml(cfg_path)
+    paths = [Path(cfg["dataset"]["directory"]) / "toll_eur.csv", Path(cfg["vehicle_config"])]
+    paths += [ROOT / p for p in algo_files]
+    return {p: git_hash_object(p) for p in paths}
+
+
+def comprobar_hashes(registro, esperados):
+    assert "git hash-object" in registro["input_hashes"]["method"]
+    files = registro["input_hashes"]["files"]
+    assert len(files) == len(esperados)
+    for path, value in esperados.items():
+        key = path.resolve().relative_to(ROOT.resolve()).as_posix() if path.is_relative_to(ROOT) else path.as_posix()
+        assert files[key] == value
+
+
+def test_run_tsp_registra_hashes_y_nota_de_peajes(tmp_path, sin_red):
+    cfg = crear_config(tmp_path)
+    main(["--optimizer", "aco", "--config", str(cfg), "--budget", "60", "--out", str(tmp_path / "raw")])
+    rec = json.loads((tmp_path / "raw" / "aco_v15_seed3.json").read_text(encoding="utf-8"))
+    comprobar_hashes(rec, hashes_esperados(cfg, "config/aco.yaml", "config/genetic.yaml"))
+    assert set(rec["input_hashes"]["files"]) >= {"config/aco.yaml", "config/genetic.yaml"}
+    assert rec["algo_config_file"] == "config/aco.yaml"
+    assert rec["tolls_complete"] is True and rec["tolls_complete_note"] == NOTA_TOLLS_COMPLETE
+    assert "NaN" in rec["tolls_complete_note"] and "validados" in rec["tolls_complete_note"]
+
+
+def test_run_tsp_hashea_el_algo_config_usado(tmp_path, sin_red):
+    cfg = crear_config(tmp_path)
+    propio = tmp_path / "mi_aco.yaml"
+    params = leer_yaml("config/aco.yaml")
+    params["aco"]["rho"] = 0.2
+    propio.write_text(yaml.safe_dump(params), encoding="utf-8")
+    main(["--optimizer", "aco", "--config", str(cfg), "--budget", "60", "--algo_config", str(propio),
+          "--out", str(tmp_path / "raw")])
+    rec = json.loads((tmp_path / "raw" / "aco_v15_seed3.json").read_text(encoding="utf-8"))
+    assert rec["input_hashes"]["files"][propio.as_posix()] == git_hash_object(propio)
+    assert len(rec["input_hashes"]["files"]) == 5  # peajes, vehículo, aco.yaml, genetic.yaml y el propio
+
+
+def test_hash_de_peajes_cambia_si_cambia_el_archivo(tmp_path, sin_red):
+    cfg = crear_config(tmp_path)
+    toll = tmp_path / "data" / "toll_eur.csv"
+    out = tmp_path / "raw" / "aco_v15_seed3.json"
+    main(["--optimizer", "aco", "--config", str(cfg), "--budget", "60", "--out", str(tmp_path / "raw")])
+    antes = json.loads(out.read_text(encoding="utf-8"))["input_hashes"]["files"][toll.as_posix()]
+    P = pd.read_csv(toll, index_col=0)
+    P.iloc[0, 1] += 1.0
+    P.to_csv(toll)
+    main(["--optimizer", "aco", "--config", str(cfg), "--budget", "60", "--out", str(tmp_path / "raw")])
+    despues = json.loads(out.read_text(encoding="utf-8"))["input_hashes"]["files"][toll.as_posix()]
+    assert antes != despues == git_hash_object(toll)
+
+
+def test_benchmark_encabezado_con_hashes_y_nota_de_peajes(tmp_path, sin_red):
+    cfg = crear_config(tmp_path)
+    benchmark.main(["--config", str(cfg), "--seeds", "0", "--hourly_values", "10", "--budget", "60",
+                    "--out", str(tmp_path)])
+    data = json.loads((tmp_path / "raw" / "benchmark_runs.json").read_text(encoding="utf-8"))
+    comprobar_hashes(data, hashes_esperados(cfg, "config/aco.yaml", "config/genetic.yaml"))
+    assert data["tolls_complete_note"] == NOTA_TOLLS_COMPLETE
+    assert all("input_hashes" not in r for r in data["runs"])  # solo en el encabezado

@@ -565,6 +565,65 @@
         align-items: flex-start;
       }
     }
+    /* Formato APA 7: etiqueta y título arriba, nota abajo */
+    .apa-label {
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: left;
+      margin: 2.5rem 0 0.2rem;
+    }
+    .apa-title {
+      font-style: italic;
+      color: var(--text-main);
+      text-align: left;
+      margin: 0 0 0.9rem;
+      line-height: 1.45;
+    }
+    .apa-note {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-align: left;
+      margin-top: 0.6rem;
+      line-height: 1.5;
+    }
+    .apa-table .table-container {
+      margin: 0;
+    }
+    figure.apa-figure {
+      margin: 2.5rem 0;
+    }
+    figure.apa-figure img {
+      display: block;
+      width: 100%;
+      margin: 0 auto;
+    }
+    figure.apa-figure img.apa-gif {
+      max-width: 760px;
+    }
+
+    /* Lista de referencias APA 7: orden alfabético con sangría francesa */
+    .references ul.apa-references {
+      list-style: none;
+      padding-left: 0;
+    }
+    .references ul.apa-references li {
+      padding-left: 2.5em;
+      text-indent: -2.5em;
+    }
+    .video-wrap, .video-folder {
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .video-wrap { aspect-ratio: 16 / 9; }
+    .video-folder { height: 480px; }
+    .video-wrap iframe, .video-folder iframe {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background-color: var(--bg-card);
+    }
   </style>
 </head>
 <body>
@@ -596,9 +655,9 @@
         </div>
 
         <h1 class="article-title">De Valles Traicioneros a las Carreteras de España: Optimización Numérica y Combinatoria con Algoritmos Bioinspirados</h1>
-        
+
         <p class="article-subtitle">
-          Un estudio experimental exhaustivo sobre el colapso de Descenso de Gradiente en paisajes complejos, la superioridad geométrica de Evolución Diferencial y la resolución del Problema del Viajero en 47 capitales peninsulares bajo costos viales reales.
+          Un estudio experimental exhaustivo sobre el colapso de Descenso de Gradiente en paisajes complejos, el desempeño de Evolución Diferencial y la búsqueda heurística de rutas para el Problema del Viajero en 47 capitales peninsulares con matrices viales de OSRM.
         </p>
 
         <div class="meta-box">
@@ -608,7 +667,7 @@
           </div>
           <div class="reading-meta">
             <span>📅 Octubre 2026</span>
-            <span>⏱️ 14 min de lectura</span>
+            <span>⏱️ 20 min de lectura</span>
           </div>
           <div class="repo-buttons">
             <a href="https://github.com/jcuartasl/RNA_20262_OptNumerica" target="_blank" rel="noopener" class="btn-repo">
@@ -623,7 +682,7 @@
 
       <!-- Apertura editorial fluida (sin títulos rígidos) -->
       <p class="lead-paragraph">
-        En este trabajo investigamos dos problemas fundamentales de la computación contemporánea: la optimización en espacios continuos multimodales y mal condicionados, y la optimización combinatoria en grafos viales reales. Demostramos por qué los métodos clásicos basados en derivadas (Descenso de Gradiente) colapsan con <strong>0% de éxito</strong> tanto ante la curvatura asimétrica de Rosenbrock ($\kappa \approx 2508$) como ante la proliferación de $11^n$ trampas locales en Rastrigin. Frente a esto, evidenciamos cómo <strong>Evolución Diferencial (DE)</strong> alcanza el <strong>100% de éxito</strong> sostenido en 2D y 3D debido a que sus operadores de diferencia vectorial se auto-alinean intrínsecamente con las variedades de menor costo. Finalmente, modelamos y resolvemos el recorrido de 47 capitales peninsulares de España con matrices asimétricas reales de OpenStreetMap (OSRM) y costos operativos de un SEAT Ibiza 1.0 TSI, descubriendo empíricamente la <em>ausencia de un umbral de cruce</em> temporal debido a la dominancia estricta de Pareto de una única ruta óptima.
+        En este trabajo investigamos dos problemas fundamentales de la computación contemporánea: la optimización en espacios continuos multimodales y mal condicionados, y la optimización combinatoria en grafos viales reales. En nuestros experimentos (30 semillas por configuración), el Descenso de Gradiente obtuvo <strong>0% de éxito</strong> tanto ante la curvatura mal condicionada de Rosenbrock ($\kappa \approx 2508$) como ante los $11^n$ mínimos locales de Rastrigin. <strong>Evolución Diferencial (DE)</strong> alcanzó el <strong>100% de éxito</strong> en Rosenbrock 2D y 3D y en Rastrigin 2D, y el <strong>83.3%</strong> en Rastrigin 3D. Finalmente, modelamos el recorrido de 47 capitales peninsulares de España con matrices asimétricas de OpenStreetMap (OSRM) y costos operativos de un SEAT Ibiza 1.0 TSI. Entre las rutas encontradas por ACO y GA no se observó un umbral de cruce en función del valor de la hora: la mejor ruta encontrada tiene a la vez el menor tiempo y el menor costo fijo. Esta conclusión está condicionada a una matriz de peajes provisional (Sección 2.3).
       </p>
 
       <!-- Tabla de Contenido -->
@@ -632,393 +691,938 @@
         <ul class="toc-list">
           <li><a href="#parte1">1. Optimización Numérica: El Desafío del Presupuesto y la Geometría del Terreno</a>
             <ul class="toc-sublist">
-              <li><a href="#costo-computacional">1.1 El Modelo de Costo Computacional Equitativo ($E_{eq} = 2n + 1$)</a></li>
-              <li><a href="#funciones-prueba">1.2 Paisajes Matemáticos: Rosenbrock vs. Rastrigin</a></li>
-              <li><a href="#resultados-parte1">1.3 Resultados Experimentales en 30 Semillas</a></li>
-              <li><a href="#discusion-parte1">1.4 Por qué falló Gradient Descent y por qué triunfó Evolución Diferencial</a></li>
+              <li><a href="#funciones-prueba">1.1 Funciones de Prueba: Definición, Dominio, Mínimo Global y Gradiente</a></li>
+              <li><a href="#algoritmos-parte1">1.2 Algoritmos y Ecuaciones de Actualización</a></li>
+              <li><a href="#costo-computacional">1.3 El Modelo de Costo Computacional Equitativo ($E_{eq} = N_f + 2n\,N_{grad}$)</a></li>
+              <li><a href="#resultados-parte1">1.4 Resultados Experimentales en 30 Semillas</a></li>
+              <li><a href="#discusion-parte1">1.5 Por qué falló Gradient Descent y por qué triunfó Evolución Diferencial</a></li>
             </ul>
           </li>
           <li><a href="#parte2">2. El Problema del Viajero en España (TSP Peninsular)</a>
             <ul class="toc-sublist">
-              <li><a href="#datos-viales">2.1 Grafo Asimétrico Real de 47 Capitales y OSRM</a></li>
-              <li><a href="#modelo-costo-tsp">2.2 Vehículo SEAT Ibiza y Función de Costo Generalizado</a></li>
-              <li><a href="#metaheuristicas-tsp">2.3 Colonias de Hormigas (ACO) vs. Algoritmos Genéticos (GA)</a></li>
-              <li><a href="#sensibilidad-v">2.4 Análisis de Sensibilidad al Valor del Tiempo: El Umbral Inexistente</a></li>
+              <li><a href="#formulacion-tsp">2.1 Formulación del Problema del Viajero</a></li>
+              <li><a href="#datos-viales">2.2 Grafo Asimétrico Real de 47 Capitales y OSRM</a></li>
+              <li><a href="#modelo-costo-tsp">2.3 Vehículo SEAT Ibiza y Función de Costo Generalizado</a></li>
+              <li><a href="#metaheuristicas-tsp">2.4 Colonias de Hormigas (ACO) vs. Algoritmos Genéticos (GA)</a></li>
+              <li><a href="#sensibilidad-v">2.5 Análisis de Sensibilidad al Valor del Tiempo: Sin Umbral Observado</a></li>
             </ul>
           </li>
-          <li><a href="#alucinaciones">3. Cacería de Alucinaciones en Modelos de Inteligencia Artificial</a></li>
-          <li><a href="#reproducibilidad">4. Reproducibilidad y Código Abierto</a></li>
-          <li><a href="#referencias">5. Referencias Bibliográficas (APA 7.ª Edición)</a></li>
+          <li><a href="#discusion">3. Discusión</a>
+            <ul class="toc-sublist">
+              <li><a href="#discusion-gd-heuristicas">3.1 ¿Qué aportó el descenso por gradiente y qué aportaron las heurísticas?</a></li>
+              <li><a href="#discusion-tsp">3.2 El problema del viajero: ACO frente a GA y el valor de la hora</a></li>
+            </ul>
+          </li>
+          <li><a href="#alucinaciones">4. Cacería de Alucinaciones en Modelos de Inteligencia Artificial</a>
+            <ul class="toc-sublist">
+              <li><a href="#verificaciones">4.1 Verificaciones Realizadas y sus Resultados</a></li>
+            </ul>
+          </li>
+          <li><a href="#reproducibilidad">5. Reproducibilidad y Código Abierto</a></li>
+          <li><a href="#videos">6. Videos de Contribución Individual</a></li>
+          <li><a href="#referencias">7. Referencias</a></li>
         </ul>
       </nav>
 
       <!-- SECCIÓN 1: OPTIMIZACIÓN NUMÉRICA -->
       <section id="parte1">
         <h2>1. Optimización Numérica: El Desafío del Presupuesto y la Geometría del Terreno</h2>
-        
+
         <p>Uno de los mayores errores metodológicos en la literatura de computación evolutiva es comparar algoritmos basándose únicamente en el número de "iteraciones" o "generaciones". Un algoritmo que hace una sola llamada a la función objetivo por paso no puede contrastarse justamente contra un método que muestrea decenas de puntos para aproximar un gradiente local.</p>
 
-        <h3 id="costo-computacional">1.1 El Modelo de Costo Computacional Equitativo ($E_{eq} = 2n + 1$)</h3>
-        <p>En problemas continuos de optimización de caja negra, las derivadas analíticas no están disponibles de antemano. Para que el Descenso de Gradiente (GD) pueda operar, el vector gradiente $\nabla f(\mathbf{x})$ debe ser aproximado numéricamente en cada paso utilizando <strong>diferencias finitas centrales</strong>:</p>
+        <h3 id="funciones-prueba">1.1 Funciones de Prueba: Definición, Dominio, Mínimo Global y Gradiente</h3>
+        <p>Sometimos a prueba cuatro optimizadores sobre dos geometrías diametralmente opuestas, en dimensión $n = 2$ y $n = 3$. Los dominios experimentales son los habituales para estas funciones (Surjanovic y Bingham, 2013).</p>
 
-        $$\frac{\partial f}{\partial x_i} \approx \frac{f(\mathbf{x} + h\mathbf{e}_i) - f(\mathbf{x} - h\mathbf{e}_i)}{2h}$$
+        <p><strong>Función de Rosenbrock</strong> (Rosenbrock, 1960). Definida en $[-5, 10]^n$ como</p>
+        $$f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ 100\,(x_{i+1} - x_i^2)^2 + (1 - x_i)^2 \right] \tag{1}$$
+        <p>con mínimo global en $\mathbf{x}^* = (1, \dots, 1)$, donde $f^* = 0$. Su gradiente analítico, el que usa nuestro código, es</p>
+        $$\frac{\partial f}{\partial x_1} = -400\,x_1 (x_2 - x_1^2) + 2(x_1 - 1), \qquad \frac{\partial f}{\partial x_n} = 200\,(x_n - x_{n-1}^2) \tag{2}$$
+        $$\frac{\partial f}{\partial x_i} = 200\,(x_i - x_{i-1}^2) - 400\,x_i (x_{i+1} - x_i^2) + 2(x_i - 1), \quad 2 \le i \le n-1 \tag{3}$$
+        <p>Presenta un valle parabólico extremadamente estrecho. En $(1, 1)$ el Hessiano es $\nabla^2 f = \begin{pmatrix} 802 & -400 \\ -400 & 200 \end{pmatrix}$, con autovalores $\lambda_{\max} \approx 1001.6$ y $\lambda_{\min} \approx 0.399$, lo que da un <strong>número de condición $\kappa \approx 2508 \gg 1$</strong>: la curvatura transversal al valle es unas 2500 veces mayor que la curvatura a lo largo de su fondo.</p>
+
+        <p><strong>Función de Rastrigin</strong> (Rastrigin, 1974). Definida en $[-5.12, 5.12]^n$ como</p>
+        $$f(\mathbf{x}) = 10\,n + \sum_{i=1}^{n} \left[ x_i^2 - 10\cos(2\pi x_i) \right], \qquad \frac{\partial f}{\partial x_i} = 2\,x_i + 20\pi \sin(2\pi x_i) \tag{4}$$
+        <p>con mínimo global en $\mathbf{x}^* = (0, \dots, 0)$, donde $f^* = 0$. Es separable y tiene 11 mínimos locales por eje dentro del dominio (cerca de cada entero $k \in \{-5, \dots, 5\}$), es decir, <strong>$11^n$ mínimos locales</strong> ($121$ en 2D y $1331$ en 3D). La segunda derivada máxima, $2 + 40\pi^2 \approx 396.78$, es la cota de Lipschitz del gradiente $L$, de modo que un paso fijo necesita $\alpha &lt; 2/L \approx 0.00504$ para no divergir.</p>
+
+        <h3 id="algoritmos-parte1">1.2 Algoritmos y Ecuaciones de Actualización</h3>
+        <p>Los cuatro optimizadores comparten el mismo dominio $[\mathbf{l}, \mathbf{u}]$, la misma política de límites (recorte, $\operatorname{clip}(x_i, l_i, u_i) = \min(\max(x_i, l_i), u_i)$) y el mismo contador de evaluaciones. Los valores de los parámetros son los de <code>config/part1.yaml</code>.</p>
+
+        <p><strong>Descenso por gradiente (GD).</strong> Parte de $\mathbf{x}_0 \sim \mathcal{U}(\mathbf{l}, \mathbf{u})$, generado con la semilla de la corrida, y actualiza</p>
+        $$\mathbf{x}_{t+1} = \operatorname{clip}\left(\mathbf{x}_t - \alpha\,\nabla f(\mathbf{x}_t),\ \mathbf{l},\ \mathbf{u}\right), \qquad \alpha = 0.0002 \tag{5}$$
+        <p>Se detiene cuando $\lVert \nabla f(\mathbf{x}_t) \rVert \le 10^{-8}$ o cuando la siguiente iteración completa no cabe en el presupuesto.</p>
+
+        <p><strong>Algoritmo evolutivo (AE)</strong> con representación real (Eiben y Smith, 2015). Población de $N = 50$ individuos. Cada padre se elige por <em>torneo</em> de tamaño $k = 3$ (gana el de menor $f$). Con probabilidad $p_c = 0.9$, cada pareja de padres $\mathbf{a}, \mathbf{b}$ produce dos hijos por cruce BLX-$\alpha$:</p>
+        $$c_j \sim \mathcal{U}\big(\min(a_j, b_j) - \alpha d_j,\ \max(a_j, b_j) + \alpha d_j\big), \qquad d_j = |a_j - b_j|, \quad \alpha = 0.5 \tag{6}$$
+        <p>Después, cada gen muta con probabilidad $p_m = 0.1$ por ruido gaussiano, $c_j \leftarrow c_j + \sigma_j z$ con $z \sim \mathcal{N}(0, 1)$ y $\sigma_j = 0.1\,(u_j - l_j)$, y se aplica el recorte. Reemplazo generacional con elitismo: los 2 mejores pasan sin reevaluarse y se generan $N - 2 = 48$ hijos por generación.</p>
+
+        <p><strong>Optimización por enjambre de partículas (PSO)</strong> (Eberhart y Kennedy, 1995). Con $N = 50$ partículas, mejor posición personal $\mathbf{p}_i$ y mejor posición global $\mathbf{g}$:</p>
+        $$\mathbf{v}_i \leftarrow w\,\mathbf{v}_i + c_1 \mathbf{r}_1 \odot (\mathbf{p}_i - \mathbf{x}_i) + c_2 \mathbf{r}_2 \odot (\mathbf{g} - \mathbf{x}_i), \qquad \mathbf{r}_1, \mathbf{r}_2 \sim \mathcal{U}(0, 1)^n \tag{7}$$
+        $$\mathbf{v}_i \leftarrow \operatorname{clip}(\mathbf{v}_i, -\mathbf{v}_{\max}, \mathbf{v}_{\max}), \qquad \mathbf{x}_i \leftarrow \operatorname{clip}(\mathbf{x}_i + \mathbf{v}_i,\ \mathbf{l},\ \mathbf{u}) \tag{8}$$
+        <p>con $w = 0.7$, $c_1 = c_2 = 1.5$ y $\mathbf{v}_{\max} = 0.5\,(\mathbf{u} - \mathbf{l})$. Las velocidades iniciales son uniformes en $[-\mathbf{v}_{\max}/2, \mathbf{v}_{\max}/2]$. $\mathbf{p}_i$ y $\mathbf{g}$ solo cambian si hay una mejora estricta.</p>
+
+        <p><strong>Evolución diferencial (DE)</strong>, variante DE/rand/1/bin (Storn y Price, 1997), con $NP = 50$, $F = 0.8$ y $CR = 0.9$. Para cada individuo $\mathbf{x}_i$ se eligen tres índices distintos entre sí y de $i$:</p>
+        $$\mathbf{v}_i = \operatorname{clip}\big(\mathbf{x}_{r_1} + F\,(\mathbf{x}_{r_2} - \mathbf{x}_{r_3}),\ \mathbf{l},\ \mathbf{u}\big) \tag{9}$$
+        $$u_{ij} = \begin{cases} v_{ij} & \text{si } \text{rand}_j &lt; CR \text{ o } j = j_{\text{rand}} \\ x_{ij} & \text{en otro caso} \end{cases}, \qquad \mathbf{x}_i \leftarrow \begin{cases} \mathbf{u}_i & \text{si } f(\mathbf{u}_i) \le f(\mathbf{x}_i) \\ \mathbf{x}_i & \text{en otro caso} \end{cases} \tag{10}$$
+        <p>La actualización es síncrona: los vectores de prueba de una generación se construyen con la población anterior.</p>
+
+        <h3 id="costo-computacional">1.3 El Modelo de Costo Computacional Equitativo ($E_{eq} = N_f + 2n\,N_{grad}$)</h3>
+        <p>Nuestra implementación del Descenso de Gradiente (GD) usa el <strong>gradiente analítico</strong> $\nabla f(\mathbf{x})$ de cada función (ecuaciones 2 a 4). Para compararlo con métodos que solo evalúan $f$, cada evaluación del gradiente se cobra, por convención, como <strong>$2n$ evaluaciones de $f$</strong>: es lo que costaría aproximarlo por <strong>diferencias finitas centrales</strong>,</p>
+
+        $$\frac{\partial f}{\partial x_i} \approx \frac{f(\mathbf{x} + h\mathbf{e}_i) - f(\mathbf{x} - h\mathbf{e}_i)}{2h} \tag{11}$$
 
         <div class="callout math">
           <div class="callout-title">📐 El balance de la moneda computacional</div>
-          Para calcular el gradiente en $\mathbb{R}^n$, es mandatorio evaluar la función en dos puntos perturbados ($+h$ y $-h$) por cada coordenada. Esto consume exactamente <strong>$2n$ evaluaciones de función</strong>. Posteriormente, al actualizar la posición hacia $\mathbf{x}_{k+1} = \mathbf{x}_k - \alpha \nabla f(\mathbf{x}_k)$, evaluar la calidad del nuevo candidato consume <strong>$1$ evaluación adicional</strong>.
+          Las diferencias centrales requieren evaluar la función en dos puntos perturbados ($+h$ y $-h$) por cada coordenada, es decir, $2n$ evaluaciones. Esa es la equivalencia que usamos para cobrar cada gradiente analítico; es una convención contable, no una medición de tiempo de CPU. Además, al actualizar la posición hacia $\mathbf{x}_{k+1} = \mathbf{x}_k - \alpha \nabla f(\mathbf{x}_k)$, evaluar el nuevo candidato consume <strong>$1$ evaluación adicional</strong> de $f$. Los contadores $N_f$ y $N_{grad}$ se registran por separado en cada corrida.
           <br><br>
           Por lo tanto, la métrica unificada de <strong>Evaluaciones Equivalentes ($E_{eq}$)</strong> es:
-          $$E_{eq} = N_f + 2n \cdot N_{grad}$$
+          $$E_{eq} = N_f + 2n \cdot N_{grad} \tag{12}$$
           Donde 1 paso de GD en 2D cuesta <strong>5 evaluaciones</strong> ($2(2)+1$), y en 3D cuesta <strong>7 evaluaciones</strong> ($2(3)+1$). Los algoritmos bioinspirados (AE, PSO, DE) consumen estrictamente 1 evaluación por individuo.
         </div>
 
         <p>Fijamos un presupuesto innegociable de <strong>$10\,000$ evaluaciones equivalentes</strong> y un umbral de convergencia riguroso de $|f(\mathbf{x}) - f^*| \le 10^{-4}$. En nuestro código fuente, el paso de GD valida preventivamente el saldo restante antes de invocar el cálculo de gradientes, asegurando que se detenga de forma equitativa.</p>
 
-        <h3 id="funciones-prueba">1.2 Paisajes Matemáticos: Rosenbrock vs. Rastrigin</h3>
-        <p>Sometimos a prueba cuatro optimizadores sobre dos geometrías diametralmente opuestas:</p>
+        <h3 id="resultados-parte1">1.4 Resultados Experimentales en 30 Semillas</h3>
+        <p>A continuación se resume el comportamiento empírico tras 480 ejecuciones independientes (30 semillas por combinación de función, dimensión y algoritmo), tal como se reporta en la <strong>Tabla 1</strong>. La <strong>Tabla 2</strong> reporta por separado las evaluaciones de $f$ y de $\nabla f$ que consumió cada configuración.</p>
 
-        <ul>
-          <li><strong>Función Valle de Rosenbrock:</strong> Definida en $[-5.0, 10.0]^n$ como $f(\mathbf{x}) = \sum_{i=1}^{n-1} [100(x_{i+1} - x_i^2)^2 + (1 - x_i)^2]$, con mínimo global en $\mathbf{x}^* = (1, \dots, 1)$ donde $f^* = 0$. Presenta un valle parabólico extremadamente estrecho. En $(1, 1)$, los autovalores de su matriz Hessiana son $\lambda_{\max} \approx 1001.6$ y $\lambda_{\min} \approx 0.399$, arrojando un <strong>número de condición $\kappa \approx 2508 \gg 1$</strong>. Esto implica que las paredes son 2500 veces más empinadas que el fondo del valle.</li>
-          <li><strong>Función Multimodal de Rastrigin:</strong> Definida en $[-5.12, 5.12]^n$ como $f(\mathbf{x}) = 10n + \sum_{i=1}^n [x_i^2 - 10\cos(2\pi x_i)]$, con mínimo global en $\mathbf{x}^* = (0, \dots, 0)$ donde $f^* = 0$. Es una función altamente separable pero con exactamente <strong>$11^n$ mínimos locales</strong> ($121$ en 2D y $1331$ en 3D). La cota de Lipschitz en el origen es $L \approx 396.78$, exigiendo $\alpha < 2/L \approx 0.00504$ para no divergir.</li>
-        </ul>
-
-        <h3 id="resultados-parte1">1.3 Resultados Experimentales en 30 Semillas</h3>
-        <p>A continuación se resume el comportamiento empírico tras 480 ejecuciones independientes (30 semillas por combinación de función, dimensión y algoritmo), tal como se reporta en la <strong>Tabla 1</strong>.</p>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Función</th>
-                <th>Dim</th>
-                <th>Algoritmo</th>
-                <th>Mejor $f$</th>
-                <th>Mediana $f$</th>
-                <th>Media $\pm$ Desv.</th>
-                <th>Tasa de Éxito</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Rosenbrock</strong></td>
-                <td>2D</td>
-                <td>Gradient Descent</td>
-                <td>$3.88 \times 10^{-3}$</td>
-                <td>$3.99 \times 10^{-1}$</td>
-                <td>$1.89 \pm 3.12$</td>
-                <td><span class="badge-fail">0.0%</span></td>
-              </tr>
-              <tr>
-                <td>Rosenbrock</td>
-                <td>2D</td>
-                <td>Algoritmo Evolutivo (BLX-$\alpha$)</td>
-                <td>$4.81 \times 10^{-7}$</td>
-                <td>$4.23 \times 10^{-5}$</td>
-                <td>$4.51 \times 10^{-5} \pm 2.8 \times 10^{-5}$</td>
-                <td><span class="badge-success">100.0%</span></td>
-              </tr>
-              <tr>
-                <td>Rosenbrock</td>
-                <td>2D</td>
-                <td>PSO ($w=0.7, c_1=c_2=1.5$)</td>
-                <td>$1.12 \times 10^{-8}$</td>
-                <td>$3.91 \times 10^{-5}$</td>
-                <td>$4.18 \times 10^{-5} \pm 2.6 \times 10^{-5}$</td>
-                <td><span class="badge-success">100.0%</span></td>
-              </tr>
-              <tr>
-                <td>Rosenbrock</td>
-                <td>2D</td>
-                <td><strong>Evolución Diferencial (DE)</strong></td>
-                <td><strong>$2.15 \times 10^{-9}$</strong></td>
-                <td><strong>$1.08 \times 10^{-5}$</strong></td>
-                <td><strong>$1.52 \times 10^{-5} \pm 1.4 \times 10^{-5}$</strong></td>
-                <td><span class="badge-success">100.0%</span></td>
-              </tr>
-              <tr>
-                <td><strong>Rosenbrock</strong></td>
-                <td>3D</td>
-                <td>Gradient Descent</td>
-                <td>$8.91 \times 10^{-2}$</td>
-                <td>$1.45$</td>
-                <td>$3.78 \pm 4.21$</td>
-                <td><span class="badge-fail">0.0%</span></td>
-              </tr>
-              <tr>
-                <td>Rosenbrock</td>
-                <td>3D</td>
-                <td>Algoritmo Evolutivo</td>
-                <td>$7.14 \times 10^{-5}$</td>
-                <td>$2.48 \times 10^{-1}$</td>
-                <td>$4.12 \times 10^{-1} \pm 0.38$</td>
-                <td><span class="badge-mid">6.7%</span></td>
-              </tr>
-              <tr>
-                <td>Rosenbrock</td>
-                <td>3D</td>
-                <td>PSO</td>
-                <td>$5.32 \times 10^{-5}$</td>
-                <td>$2.11 \times 10^{-1}$</td>
-                <td>$3.85 \times 10^{-1} \pm 0.34$</td>
-                <td><span class="badge-mid">6.7%</span></td>
-              </tr>
-              <tr>
-                <td>Rosenbrock</td>
-                <td>3D</td>
-                <td><strong>Evolución Diferencial (DE)</strong></td>
-                <td><strong>$4.92 \times 10^{-9}$</strong></td>
-                <td><strong>$1.94 \times 10^{-5}$</strong></td>
-                <td><strong>$2.31 \times 10^{-5} \pm 1.8 \times 10^{-5}$</strong></td>
-                <td><span class="badge-success">100.0%</span></td>
-              </tr>
-              <tr>
-                <td><strong>Rastrigin</strong></td>
-                <td>2D</td>
-                <td>Gradient Descent</td>
-                <td>$9.95 \times 10^{-1}$</td>
-                <td>$2.98$</td>
-                <td>$3.41 \pm 1.82$</td>
-                <td><span class="badge-fail">0.0%</span></td>
-              </tr>
-              <tr>
-                <td>Rastrigin</td>
-                <td>2D</td>
-                <td>Algoritmo Evolutivo</td>
-                <td>$0.00$</td>
-                <td>$0.00$</td>
-                <td>$0.033 \pm 0.18$</td>
-                <td><span class="badge-success">96.7%</span></td>
-              </tr>
-              <tr>
-                <td>Rastrigin</td>
-                <td>2D</td>
-                <td>PSO</td>
-                <td>$0.00$</td>
-                <td>$0.00$</td>
-                <td>$0.033 \pm 0.18$</td>
-                <td><span class="badge-success">96.7%</span></td>
-              </tr>
-              <tr>
-                <td>Rastrigin</td>
-                <td>2D</td>
-                <td>Evolución Diferencial</td>
-                <td>$0.00$</td>
-                <td>$0.00$</td>
-                <td>$0.166 \pm 0.37$</td>
-                <td><span class="badge-mid">83.3%</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="apa-table">
+          <p class="apa-label">Tabla 1</p>
+          <p class="apa-title">Desempeño de los cuatro optimizadores en Rosenbrock y Rastrigin (30 corridas por configuración)</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Función</th>
+                  <th>Dim</th>
+                  <th>Algoritmo</th>
+                  <th>Mejor $f$</th>
+                  <th>Peor $f$</th>
+                  <th>Media $\pm$ Desv.</th>
+                  <th>Tasa de Éxito</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Rosenbrock</strong></td>
+                  <td>2D</td>
+                  <td>Gradient Descent</td>
+                  <td>$2.79 \times 10^{-2}$</td>
+                  <td>$14.85$</td>
+                  <td>$3.54 \pm 4.17$</td>
+                  <td><span class="badge-fail">0.0% (0/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>2D</td>
+                  <td>Algoritmo Evolutivo (BLX-$\alpha$)</td>
+                  <td>$4.16 \times 10^{-6}$</td>
+                  <td>$0.30$</td>
+                  <td>$4.19 \times 10^{-2} \pm 7.35 \times 10^{-2}$</td>
+                  <td><span class="badge-mid">16.7% (5/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>2D</td>
+                  <td>PSO ($w=0.7, c_1=c_2=1.5$)</td>
+                  <td>$5.63 \times 10^{-15}$</td>
+                  <td>$1.60 \times 10^{-8}$</td>
+                  <td>$9.61 \times 10^{-10} \pm 3.04 \times 10^{-9}$</td>
+                  <td><span class="badge-success">100.0% (30/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>2D</td>
+                  <td>Evolución Diferencial (DE)</td>
+                  <td>$8.21 \times 10^{-29}$</td>
+                  <td>$2.25 \times 10^{-22}$</td>
+                  <td>$1.05 \times 10^{-23} \pm 4.13 \times 10^{-23}$</td>
+                  <td><span class="badge-success">100.0% (30/30)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Rosenbrock</strong></td>
+                  <td>3D</td>
+                  <td>Gradient Descent</td>
+                  <td>$0.10$</td>
+                  <td>$9.46$</td>
+                  <td>$2.96 \pm 2.90$</td>
+                  <td><span class="badge-fail">0.0% (0/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>3D</td>
+                  <td>Algoritmo Evolutivo (BLX-$\alpha$)</td>
+                  <td>$1.61 \times 10^{-6}$</td>
+                  <td>$2.67$</td>
+                  <td>$0.64 \pm 0.63$</td>
+                  <td><span class="badge-mid">6.7% (2/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>3D</td>
+                  <td>PSO ($w=0.7, c_1=c_2=1.5$)</td>
+                  <td>$6.88 \times 10^{-5}$</td>
+                  <td>$5.66$</td>
+                  <td>$0.39 \pm 1.26$</td>
+                  <td><span class="badge-mid">6.7% (2/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>3D</td>
+                  <td>Evolución Diferencial (DE)</td>
+                  <td>$1.51 \times 10^{-13}$</td>
+                  <td>$9.65 \times 10^{-10}$</td>
+                  <td>$7.68 \times 10^{-11} \pm 2.00 \times 10^{-10}$</td>
+                  <td><span class="badge-success">100.0% (30/30)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Rastrigin</strong></td>
+                  <td>2D</td>
+                  <td>Gradient Descent</td>
+                  <td>$1.99$</td>
+                  <td>$33.83$</td>
+                  <td>$16.78 \pm 10.64$</td>
+                  <td><span class="badge-fail">0.0% (0/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>2D</td>
+                  <td>Algoritmo Evolutivo (BLX-$\alpha$)</td>
+                  <td>$0$</td>
+                  <td>$1.66 \times 10^{-8}$</td>
+                  <td>$5.53 \times 10^{-10} \pm 3.03 \times 10^{-9}$</td>
+                  <td><span class="badge-success">100.0% (30/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>2D</td>
+                  <td>PSO ($w=0.7, c_1=c_2=1.5$)</td>
+                  <td>$0$</td>
+                  <td>$0$</td>
+                  <td>$0 \pm 0$</td>
+                  <td><span class="badge-success">100.0% (30/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>2D</td>
+                  <td>Evolución Diferencial (DE)</td>
+                  <td>$0$</td>
+                  <td>$0$</td>
+                  <td>$0 \pm 0$</td>
+                  <td><span class="badge-success">100.0% (30/30)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Rastrigin</strong></td>
+                  <td>3D</td>
+                  <td>Gradient Descent</td>
+                  <td>$4.97$</td>
+                  <td>$49.75$</td>
+                  <td>$25.50 \pm 11.90$</td>
+                  <td><span class="badge-fail">0.0% (0/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>3D</td>
+                  <td>Algoritmo Evolutivo (BLX-$\alpha$)</td>
+                  <td>$0$</td>
+                  <td>$3.61 \times 10^{-4}$</td>
+                  <td>$1.57 \times 10^{-5} \pm 6.76 \times 10^{-5}$</td>
+                  <td><span class="badge-mid">96.7% (29/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>3D</td>
+                  <td>PSO ($w=0.7, c_1=c_2=1.5$)</td>
+                  <td>$0$</td>
+                  <td>$0.99$</td>
+                  <td>$3.32 \times 10^{-2} \pm 0.18$</td>
+                  <td><span class="badge-mid">96.7% (29/30)</span></td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>3D</td>
+                  <td>Evolución Diferencial (DE)</td>
+                  <td>$3.56 \times 10^{-10}$</td>
+                  <td>$1.34 \times 10^{-2}$</td>
+                  <td>$6.35 \times 10^{-4} \pm 2.47 \times 10^{-3}$</td>
+                  <td><span class="badge-mid">83.3% (25/30)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="apa-note"><em>Nota.</em> Presupuesto de 10.000 evaluaciones equivalentes por corrida, semillas 0–29. Éxito: $|f_{best} - f^*| \le 10^{-4}$. Redondeo: dos decimales; valores menores que 0.1 en notación científica con tres cifras significativas. Datos de <code>parte1/results/summary/parte1_comparacion.csv</code> (repositorio RNA_20262_OptNumerica).</p>
         </div>
-        <figcaption><strong>Tabla 1:</strong> Desempeño comparativo de optimización numérica sobre 30 ejecuciones independientes (presupuesto estricto de 10.000 evaluaciones equivalentes, $\epsilon = 10^{-4}$).</figcaption>
 
-        <!-- Dynamic Visuals Carousel / Grid -->
-        <div class="figure-grid">
-          <figure>
-            <img src="assets/part1/gd_rosenbrock_2d.gif" alt="Evolución de Gradient Descent en Rosenbrock 2D">
-            <figcaption><strong>Figura 1A:</strong> Animación del Descenso de Gradiente en Rosenbrock 2D. Con $\alpha = 0.0002$, el algoritmo entra al valle pero se ralentiza hasta agotar su presupuesto antes de alcanzar $(1, 1)$.</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/part1/de_rosenbrock_2d.gif" alt="Evolución de Differential Evolution en Rosenbrock 2D">
-            <figcaption><strong>Figura 1B:</strong> Animación de Evolución Diferencial en Rosenbrock 2D. La población converge al fondo del valle y los vectores diferencia se orientan a lo largo de la curva parabólica.</figcaption>
-          </figure>
+        <div class="apa-table">
+          <p class="apa-label">Tabla 2</p>
+          <p class="apa-title">Evaluaciones de $f$ y de $\nabla f$ por configuración (media de 30 corridas)</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Función</th>
+                  <th>Dim</th>
+                  <th>Algoritmo</th>
+                  <th>$N_f$</th>
+                  <th>$N_{grad}$</th>
+                  <th>$E_{eq}$</th>
+                  <th>Rango de $E_{eq}$</th>
+                  <th>Iteraciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Rosenbrock</strong></td>
+                  <td>2D</td>
+                  <td>Gradient Descent</td>
+                  <td>2000</td>
+                  <td>1999</td>
+                  <td>9996</td>
+                  <td>9996</td>
+                  <td>1999</td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>2D</td>
+                  <td>Algoritmo Evolutivo</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>208</td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>2D</td>
+                  <td>PSO</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>2D</td>
+                  <td>Evolución Diferencial</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td><strong>Rosenbrock</strong></td>
+                  <td>3D</td>
+                  <td>Gradient Descent</td>
+                  <td>1429</td>
+                  <td>1428</td>
+                  <td>9997</td>
+                  <td>9997</td>
+                  <td>1428</td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>3D</td>
+                  <td>Algoritmo Evolutivo</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>208</td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>3D</td>
+                  <td>PSO</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td>Rosenbrock</td>
+                  <td>3D</td>
+                  <td>Evolución Diferencial</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td><strong>Rastrigin</strong></td>
+                  <td>2D</td>
+                  <td>Gradient Descent</td>
+                  <td>295.13</td>
+                  <td>295.13</td>
+                  <td>1475.67</td>
+                  <td>1345–1640</td>
+                  <td>294.13</td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>2D</td>
+                  <td>Algoritmo Evolutivo</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>208</td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>2D</td>
+                  <td>PSO</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>2D</td>
+                  <td>Evolución Diferencial</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td><strong>Rastrigin</strong></td>
+                  <td>3D</td>
+                  <td>Gradient Descent</td>
+                  <td>297.40</td>
+                  <td>297.40</td>
+                  <td>2081.80</td>
+                  <td>1925–2296</td>
+                  <td>296.40</td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>3D</td>
+                  <td>Algoritmo Evolutivo</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>208</td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>3D</td>
+                  <td>PSO</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+                <tr>
+                  <td>Rastrigin</td>
+                  <td>3D</td>
+                  <td>Evolución Diferencial</td>
+                  <td>10000</td>
+                  <td>0</td>
+                  <td>10000</td>
+                  <td>10000</td>
+                  <td>199</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="apa-note"><em>Nota.</em> $E_{eq} = N_f + 2n\,N_{grad}$ (ecuación 12). "Iteraciones" son pasos de GD o generaciones. En Rastrigin, GD se detiene antes de agotar el presupuesto porque alcanza un punto con $\lVert \nabla f \rVert \le 10^{-8}$; las metaheurísticas no se detienen al tener éxito y consumen las 10.000 evaluaciones. Redondeo: dos decimales. Datos de los 16 archivos <code>parte1/results/raw/&lt;función&gt;_&lt;dim&gt;d_&lt;algoritmo&gt;.csv</code> (repositorio RNA_20262_OptNumerica).</p>
         </div>
 
-        <figure>
-          <img src="assets/part1/success_rate_comparison.png" alt="Comparación de Tasa de Éxito en 2D y 3D">
-          <figcaption><strong>Figura 2:</strong> Tasa de éxito global ($\epsilon \le 10^{-4}$). Nótese el colapso abrupto de PSO y AE al pasar de Rosenbrock 2D a 3D, contrastado con la robustez perfecta de DE.</figcaption>
+        <p>Las animaciones de la <strong>Figura 1</strong> y la <strong>Figura 2</strong> muestran, en Rosenbrock 2D y con la semilla 0, cómo avanzan GD y DE. La <strong>Figura 3</strong> resume las tasas de éxito de la Tabla 1.</p>
+
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 1</p>
+          <p class="apa-title">Descenso por gradiente en Rosenbrock 2D (semilla 0, $\alpha = 0.0002$)</p>
+          <img class="apa-gif" src="assets/part1/gd_rosenbrock_2d.gif" alt="Evolución de Gradient Descent en Rosenbrock 2D">
+          <figcaption class="apa-note"><em>Nota.</em> El algoritmo entra al valle pero avanza lentamente por su fondo y agota el presupuesto antes de alcanzar $(1, 1)$. Elaborada por Sebastian Villegas con <code>python -m src.visualization.animation --optimizer gd --seed 0</code> (repositorio RNA_20262_OptNumerica).</figcaption>
         </figure>
 
-        <h3 id="discusion-parte1">1.4 Por qué falló Gradient Descent y por qué triunfó Evolución Diferencial</h3>
-        
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 2</p>
+          <p class="apa-title">Evolución diferencial en Rosenbrock 2D (semilla 0)</p>
+          <img class="apa-gif" src="assets/part1/de_rosenbrock_2d.gif" alt="Evolución de Differential Evolution en Rosenbrock 2D">
+          <figcaption class="apa-note"><em>Nota.</em> La población converge al fondo del valle y los vectores diferencia se orientan a lo largo de la curva parabólica. Elaborada por Sebastian Villegas con <code>python -m src.visualization.animation --optimizer de --seed 0</code> (repositorio RNA_20262_OptNumerica).</figcaption>
+        </figure>
+
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 3</p>
+          <p class="apa-title">Tasa de éxito por algoritmo, función y dimensión</p>
+          <img src="assets/part1/success_rate_comparison.png" alt="Comparación de Tasa de Éxito en 2D y 3D">
+          <figcaption class="apa-note"><em>Nota.</em> Éxito: $|f_{best} - f^*| \le 10^{-4}$ en 30 corridas. En Rosenbrock, PSO pasa de 100.0% en 2D a 6.7% en 3D y AE de 16.7% a 6.7%, mientras DE se mantiene en 100.0%; en Rastrigin 3D, DE baja a 83.3%. Elaborada por Sebastian Villegas con <code>python -m src.visualization.plot_part1_results</code> a partir de <code>results/summary/parte1_comparacion.csv</code> (repositorio RNA_20262_OptNumerica).</figcaption>
+        </figure>
+
+        <h3 id="discusion-parte1">1.5 Por qué falló Gradient Descent y por qué triunfó Evolución Diferencial</h3>
+
         <div class="callout warn">
           <div class="callout-title">⚠️ La trampa determinista de Rastrigin</div>
           <p>En Rastrigin, reducir la tasa de aprendizaje $\alpha$ a un valor microscópico <strong>no resuelve la convergencia al mínimo global</strong>. Dado que GD es un algoritmo estrictamente local y determinista (la actualización $\mathbf{x}_{k+1} = \mathbf{x}_k - \alpha \nabla f(\mathbf{x}_k)$ carece de componentes estocásticos), disminuir $\alpha$ simplemente garantiza que la trayectoria se deslice con extrema precisión matemática hacia el fondo del pozo local en cuya cuenca de atracción nació. Para alcanzar el mínimo central $(0,0)$, el punto aleatorio inicial debió caer dentro del intervalo $(-0.5, 0.5)^n$. La probabilidad de este suceso es $P = (1/10.24)^2 \approx 0.95\%$ en 2D y $0.09\%$ en 3D. GD queda atrapado determinísticamente en el 100% de los casos prácticos.</p>
         </div>
 
+        <p>La Tabla 2 muestra el otro lado de esta trampa: en Rastrigin, GD se detiene tras unos 295 pasos (alrededor de 1476 evaluaciones equivalentes en 2D y 2082 en 3D) porque llega a un punto estacionario, y no tiene manera de usar el resto del presupuesto para escapar. En Rosenbrock, en cambio, GD gasta casi todo el presupuesto (9996 y 9997 evaluaciones equivalentes) avanzando lentamente por el valle mal condicionado, como se ve en la Figura 1.</p>
+
         <p><strong>El milagro geométrico de Evolución Diferencial en Rosenbrock:</strong> En 3D, el valle de Rosenbrock se convierte en un filamento curvado unidimensional inmerso en un hipervolumen tridimensional. Tanto el Algoritmo Evolutivo (cruce BLX-$\alpha$ y mutación normal) como PSO perturban las posiciones <em>coordenada a coordenada (desacopladas por ejes ortogonales)</em>. Al realizar saltos alineados con los ejes cartesianos sobre un camino diagonal y curvo, casi cualquier perturbación se sale del valle e impacta las paredes verticales, hundiendo su efectividad al <strong>6.7%</strong>.</p>
 
-        <p>En cambio, DE genera su vector mutante mediante la operación:</p>
+        <p>En cambio, DE genera su vector mutante mediante la ecuación 9:</p>
         $$\mathbf{v}_i = \mathbf{x}_{r1} + F(\mathbf{x}_{r2} - \mathbf{x}_{r3})$$
-        <p>Debido a la rápida selección natural, la mayoría de los individuos caen en el fondo del valle parabólico. Por ende, <strong>el vector diferencia $(\mathbf{x}_{r2} - \mathbf{x}_{r3})$ apunta automáticamente a lo largo de la tangente del valle curvado</strong>. DE aprende de forma adaptativa y colectiva la curvatura de la función sin requerir matrices Hessianas, manteniendo un <strong>100.0% de éxito</strong> en todas las dimensiones.</p>
+        <p>Debido a la rápida selección natural, la mayoría de los individuos caen en el fondo del valle parabólico. Por ende, <strong>el vector diferencia $(\mathbf{x}_{r2} - \mathbf{x}_{r3})$ apunta automáticamente a lo largo de la tangente del valle curvado</strong> (Figura 2). DE aprende de forma adaptativa y colectiva la curvatura de la función sin requerir matrices Hessianas, manteniendo un <strong>100.0% de éxito</strong> en Rosenbrock 2D y 3D. En Rastrigin, DE logra 100.0% en 2D pero 83.3% (25/30) en 3D, por debajo de AE y PSO (96.7% cada uno).</p>
       </section>
 
       <!-- SECCIÓN 2: OPTIMIZACIÓN COMBINATORIA TSP -->
       <section id="parte2">
         <h2>2. El Problema del Viajero en España (TSP Peninsular)</h2>
-        
-        <p>El Problema del Viajero (TSP) es el clásico problema NP-duro de optimización combinatoria. En este proyecto abordamos una versión aplicada y realista: planificar el circuito comercial cerrado que recorra las <strong>47 capitales de provincia de la España peninsular</strong> con costo generalizado de transporte mínimo.</p>
 
-        <figure>
-          <img src="assets/part2/aco_v15_seed0.gif" alt="Animación de convergencia de ACO sobre el mapa de España">
-          <figcaption><strong>Figura 3:</strong> Evolución animada del circuito peninsular construido por Ant Colony Optimization (ACO) sobre el grafo de carreteras de España a $v=15$ €/h. Observe cómo el hormiguero desenreda los cruces en las primeras 500 iteraciones.</figcaption>
+        <p>El Problema del Viajero (TSP) es el clásico problema NP-duro de optimización combinatoria. En este proyecto abordamos una versión aplicada y realista: planificar el circuito comercial cerrado que recorra las <strong>47 capitales de provincia de la España peninsular</strong> con costo generalizado de transporte mínimo. La <strong>Figura 4</strong> muestra cómo evoluciona la mejor ruta encontrada en una corrida de ACO.</p>
+
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 4</p>
+          <p class="apa-title">Evolución de la mejor ruta encontrada por ACO (seed 0, $v = 15$ €/h)</p>
+          <img class="apa-gif" src="assets/part2/aco_v15_seed0.gif" alt="Animación de convergencia de ACO sobre el mapa de España">
+          <figcaption class="apa-note"><em>Nota.</em> Budget de 50.000 evaluaciones. La ruta se dibuja con segmentos rectos sobre longitud y latitud (representación esquemática, no la geometría de las carreteras), sobre el contorno de España peninsular de Natural Earth (s. f.), datos de dominio público guardados en <code>data/geo/spain_peninsula.geojson</code>. La mejor ruta encontrada mejora por última vez en la iteración 73 (2.220 evaluaciones) de 1.666 y termina en 1830.61 €. Elaborada por Juan David Robayo con <code>python -m src.experiments.demo</code>, a partir del <code>history</code> de <code>results/demo/raw/aco_v15_seed0.json</code> (repositorio RNA_20262_OptCombinatoria_TSP).</figcaption>
         </figure>
 
-        <h3 id="datos-viales">2.1 Grafo Asimétrico Real de 47 Capitales y OSRM</h3>
+        <h3 id="formulacion-tsp">2.1 Formulación del Problema del Viajero</h3>
+        <p>Sea $\mathcal{C} = \{0, 1, \dots, 46\}$ el conjunto de capitales. Una solución es una permutación $\pi$ de $\mathcal{C}$: cada ciudad aparece exactamente una vez y el recorrido vuelve a la ciudad inicial. Para un valor de la hora $v$ (€/h), el costo del recorrido es</p>
+        $$J(\pi, v) = \sum_{k=0}^{46} C_{\pi(k)\,\pi(k+1)}(v), \qquad \pi(47) \equiv \pi(0) \tag{13}$$
+        <p>donde $C_{ij}(v)$ es el costo del arco dirigido $i \to j$ (ecuación 14). El objetivo es $\min_{\pi} J(\pi, v)$. Como las matrices son asimétricas ($C_{ij} \neq C_{ji}$), recorrer un ciclo en un sentido o en el otro cuesta distinto; con la ciudad inicial fija hay $46! \approx 5.50 \times 10^{57}$ recorridos dirigidos distintos, demasiados para una enumeración exhaustiva. Rotar un ciclo no cambia su costo. Las rutas que reportamos son las mejores encontradas por ACO y GA, no óptimos demostrados.</p>
+
+        <h3 id="datos-viales">2.2 Grafo Asimétrico Real de 47 Capitales y OSRM</h3>
         <p>A diferencia de los problemas de benchmark sintéticos euclidianos (como TSPLIB), las carreteras reales no son simétricas ni planas:</p>
         <ul>
           <li><strong>Exclusiones geográficas rigurosas:</strong> España cuenta con 50 provincias y 2 ciudades autónomas. Se excluyeron formalmente <strong>Palma de Mallorca, Santa Cruz de Tenerife, Las Palmas de Gran Canaria, Ceuta y Melilla</strong>, dado que no poseen continuidad física por carretera y exigirían ferris o vuelos comerciales que invalidan el modelo de conducción terrestre.</li>
-          <li><strong>Asimetría Vial:</strong> Mediante la API pública de <strong>OSRM (Open Source Routing Machine)</strong> con cartografía de OpenStreetMap (perfil <code>driving</code>), se construyeron las matrices dirigidas de $47 \times 46 = 2162$ pares ordenados. Debido a trazados de circunvalación, túneles con sentido único y enlaces viales, $D_{ij} \neq D_{ji}$ y $T_{ij} \neq T_{ji}$. La velocidad media de la red es de $87.5$ km/h.</li>
-          <li><strong>Reproducibilidad Criptográfica:</strong> Las matrices se exportaron localmente en CSV validadas mediante el hash SHA-256 <code>e30063cc2c9856cb</code>, garantizando ejecuciones 100% offline y reproducibles sin depender de conexión a internet.</li>
+          <li><strong>Asimetría Vial:</strong> Mediante la API pública de <strong>OSRM (Open Source Routing Machine)</strong> (Luxen y Vetter, 2011) con cartografía de OpenStreetMap (perfil <code>driving</code>), consultada el 9 de octubre de 2026, se construyeron las matrices dirigidas de $47 \times 46 = 2162$ pares ordenados. Debido a trazados de circunvalación, túneles con sentido único y enlaces viales, $D_{ij} \neq D_{ji}$ y $T_{ij} \neq T_{ji}$. La velocidad media de la red es de $87.5$ km/h.</li>
+          <li><strong>Reproducibilidad Criptográfica:</strong> Las matrices se exportaron localmente en CSV, identificadas por el hash SHA-256 abreviado <code>e30063cc2c9856cb</code> (cubre solo las matrices de distancia y tiempo, no los peajes ni el vehículo), de modo que la ejecución no depende de conexión a internet.</li>
         </ul>
 
-        <h3 id="modelo-costo-tsp">2.2 Vehículo SEAT Ibiza y Función de Costo Generalizado</h3>
+        <h3 id="modelo-costo-tsp">2.3 Vehículo SEAT Ibiza y Función de Costo Generalizado</h3>
         <p>El costo de transitar desde la capital $i$ hasta la capital $j$ ponderando el tiempo del conductor $v$ (en €/h) se formuló como:</p>
 
-        $$C_{ij}(v) = v \cdot T_{ij} + P_{ij} + F_{ij}$$
+        $$C_{ij}(v) = v \cdot T_{ij} + P_{ij} + F_{ij} \tag{14}$$
 
-        <p>Donde el costo de combustible es:</p>
-        $$F_{ij} = \left(\frac{D_{ij}}{100}\right) \cdot q \cdot p$$
+        <p>donde $T_{ij}$ es el tiempo de viaje (h), $P_{ij}$ el peaje (€) y $F_{ij}$ el costo de combustible (€), con $D_{ij}$ la distancia por carretera (km), $q$ el consumo (L/100 km) y $p$ el precio del combustible (€/L):</p>
+        $$F_{ij} = \left(\frac{D_{ij}}{100}\right) \cdot q \cdot p \tag{15}$$
 
         <div class="callout info">
-          <div class="callout-title">🚗 Ficha técnica oficial y fuentes primarias</div>
+          <div class="callout-title">🚗 Vehículo, combustible y peajes (con sus limitaciones)</div>
           <ul>
             <li><strong>Vehículo:</strong> SEAT Ibiza 1.0 TSI 70 kW (95 CV) Reference, modelo 2024.</li>
-            <li><strong>Consumo mixto homologado ($q$):</strong> $5.1$ L/100 km (ciclo oficial WLTP para versión base de acceso, verificado en IDAE y fichas técnicas del fabricante).</li>
-            <li><strong>Precio del Combustible ($p$):</strong> Gasolina 95 sin plomo a <strong>$1.849$ €/L</strong> (Boletín Petrolero Semanal de la Comisión Europea, semana del 5 de octubre de 2026).</li>
-            <li><strong>Peajes ($P_{ij}$):</strong> Matriz con peajes reales en 8 arcos identificados (autopistas concesionadas como AP-6 Villalba-Adanero, AP-51 y AP-61 a Segovia/Ávila, y AP-66 León-Campomanes).</li>
+            <li><strong>Consumo mixto homologado ($q$):</strong> $5.1$ L/100 km (WLTP combinado, 118 g/km de CO₂) según la ficha técnica de la versión Reference 2024 (km77.com, s. f.), consultada por el equipo el 2026-10-13 y verificada de nuevo el 2026-10-16. Es el valor homologado publicado en esa ficha, no un consumo real medido.</li>
+            <li><strong>Precio del Combustible ($p$):</strong> Gasolina 95 sin plomo a <strong>$1.849$ €/L</strong>: España, Euro-super 95, impuestos incluidos, precio del 5 de octubre de 2026 en el Weekly Oil Bulletin (1849.10 € por 1000 L; Comisión Europea, 2026). El equipo lo consultó vía fuel-prices.eu el 2026-10-13 y el valor se verificó en el histórico oficial el 2026-10-16.</li>
+            <li><strong>Peajes ($P_{ij}$):</strong> matriz <strong>provisional</strong>. Solo 8 de los 2162 arcos dirigidos tienen peaje mayor que 0 (Madrid ↔ Segovia, Madrid ↔ Ávila, Madrid ↔ León y León ↔ Oviedo, por la AP-6, AP-51, AP-61 y AP-66); el resto se fijó en 0 € por un criterio de red libre, sin comprobar qué autopistas recorre cada arco. La matriz no tiene fuente concreta ni fecha de consulta. Por eso la conclusión sobre el valor de la hora (Sección 2.5) está condicionada a esta matriz.</li>
           </ul>
         </div>
 
-        <h3 id="metaheuristicas-tsp">2.3 Colonias de Hormigas (ACO) vs. Algoritmos Genéticos (GA)</h3>
-        <p>Bajo un presupuesto idéntico e infranqueable de <strong>$50\,000$ evaluaciones de circuito completo</strong>, contrastamos dos filosofías bioinspiradas:</p>
-        <ol>
-          <li><strong>Ant Colony Optimization (ACO):</strong> Emplea 30 hormigas, evaporación $\rho = 0.5$, $\alpha=1.0$ (peso de feromona), $\beta=2.0$ (peso heurístico) con visibilidad $\eta_{ij} = 1/C_{ij}(v)$, y feromona inicial $\tau_0 = n_{ants}/L_{nn}$.</li>
-          <li><strong>Algoritmo Genético Permutacional (GA):</strong> Población de 60 individuos con selección por torneo ($k=3$), operador de cruce <strong>Order Crossover (OX)</strong> con $p_c = 0.8$, mutación por inversión de subsecuencia con $p_m = 0.15$ y elitismo de los 2 mejores circuitos.</li>
-        </ol>
+        <h3 id="metaheuristicas-tsp">2.4 Colonias de Hormigas (ACO) vs. Algoritmos Genéticos (GA)</h3>
+        <p>Bajo un presupuesto idéntico e infranqueable de <strong>$50\,000$ evaluaciones de circuito completo</strong>, contrastamos dos filosofías bioinspiradas. Un evaluador común calcula $J(\pi, v)$ con la ecuación 13, incluido el arco de regreso, y cuenta cada ruta evaluada; ACO y GA comparten ese contador.</p>
 
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Métrica ($v = 15$ €/h)</th>
-                <th>Ant Colony Optimization (ACO)</th>
-                <th>Genetic Algorithm (GA)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Mejor Costo Encontrado</strong></td>
-                <td>$1748.20$ €</td>
-                <td><strong>$1736.50$ €</strong> (Óptimo Global)</td>
-              </tr>
-              <tr>
-                <td><strong>Distancia del Mejor Circuito</strong></td>
-                <td>$6245.1$ km</td>
-                <td><strong>$6198.4$ km</strong></td>
-              </tr>
-              <tr>
-                <td><strong>Tiempo de Manejo</strong></td>
-                <td>$77.42$ h</td>
-                <td><strong>$76.80$ h</strong></td>
-              </tr>
-              <tr>
-                <td><strong>Media $\pm$ Desv. Estándar</strong></td>
-                <td>$1762.40 \pm 8.95$ €</td>
-                <td>$1758.12 \pm 22.40$ €</td>
-              </tr>
-              <tr>
-                <td><strong>Velocidad de Convergencia Inicial</strong></td>
-                <td>Ultra-rápida (&lt; 200 iteraciones)</td>
-                <td>Progresiva y exploratoria</td>
-              </tr>
-            </tbody>
-          </table>
+        <p><strong>Colonia de hormigas (ACO)</strong>, variante Ant System (Dorigo y Stützle, 2004), con $m = 30$ hormigas, $\alpha = 1$, $\beta = 2$, $\rho = 0.5$, $Q = 1$ y $\varepsilon = 1$. Cada hormiga parte de una ciudad elegida al azar y, estando en $i$, elige la siguiente ciudad $j$ entre las no visitadas $\mathcal{N}_k$ con probabilidad</p>
+        $$p_{ij}^{k} = \frac{\tau_{ij}^{\alpha}\,\eta_{ij}^{\beta}}{\sum_{l \in \mathcal{N}_k} \tau_{il}^{\alpha}\,\eta_{il}^{\beta}}, \qquad \eta_{ij} = \frac{1}{\max\big(C_{ij}(v), \varepsilon\big)} \tag{16}$$
+        <p>Cuando las 30 hormigas terminan, la feromona se evapora y cada hormiga $k$ deposita en los arcos de su ruta, incluido el de cierre, una cantidad inversamente proporcional a su costo $L_k$:</p>
+        $$\tau_{ij} \leftarrow (1 - \rho)\,\tau_{ij} + \sum_{k=1}^{m} \Delta\tau_{ij}^{k}, \qquad \Delta\tau_{ij}^{k} = \begin{cases} Q / L_k & \text{si } (i, j) \in \text{ruta}_k \\ 0 & \text{en otro caso} \end{cases} \tag{17}$$
+        <p>La feromona inicial es $\tau_0 = m / L_{nn}$, con $L_{nn}$ el costo de la ruta del vecino más cercano; esa ruta solo fija la escala y no consume presupuesto. Cada iteración evalúa 30 rutas, así que con 50.000 evaluaciones se completan 1666 iteraciones.</p>
+
+        <p><strong>Algoritmo genético (GA)</strong> con representación de permutaciones (Eiben y Smith, 2015), con población de 60 rutas. Cada padre se elige por torneo de tamaño $k = 3$. Con probabilidad $p_c = 0.8$, cada pareja produce dos hijos por <strong>cruce de orden (OX)</strong>: se eligen dos cortes $c_1 &lt; c_2$, el hijo copia el segmento $[c_1, c_2]$ del primer padre y completa las posiciones restantes, empezando después de $c_2$ y de forma circular, con las ciudades que faltan en el orden en que aparecen en el segundo padre. Así cada hijo sigue siendo una permutación válida. Luego, con probabilidad $p_m = 0.15$ por individuo, se aplica <strong>mutación por inversión</strong>: se eligen $c_1 &lt; c_2$ y se invierte el segmento,</p>
+        $$(\pi_{c_1}, \pi_{c_1+1}, \dots, \pi_{c_2}) \leftarrow (\pi_{c_2}, \pi_{c_2-1}, \dots, \pi_{c_1}) \tag{18}$$
+        <p>Con elitismo, las 2 mejores rutas pasan intactas y se generan 58 hijos por generación (862 generaciones con 50.000 evaluaciones). Los resultados de ambos métodos con $v = 15$ €/h se resumen en la <strong>Tabla 3</strong>, y la distribución del costo final por semilla para cada valor de $v$ se muestra en la <strong>Figura 5</strong>.</p>
+
+        <div class="apa-table">
+          <p class="apa-label">Tabla 3</p>
+          <p class="apa-title">Rendimiento comparativo de ACO y GA en el TSP peninsular con $v = 15$ €/h (30 semillas por algoritmo)</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Métrica ($v = 15$ €/h)</th>
+                  <th>Ant Colony Optimization (ACO)</th>
+                  <th>Genetic Algorithm (GA)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Mejor costo encontrado</strong></td>
+                  <td>$1764.84$ € (seed 29)</td>
+                  <td><strong>$1756.45$ €</strong> (seed 7)</td>
+                </tr>
+                <tr>
+                  <td><strong>Peor costo</strong></td>
+                  <td>$1861.75$ €</td>
+                  <td>$1909.82$ €</td>
+                </tr>
+                <tr>
+                  <td><strong>Media $\pm$ Desv. Estándar</strong></td>
+                  <td><strong>$1818.79 \pm 24.48$ €</strong></td>
+                  <td>$1820.78 \pm 42.36$ €</td>
+                </tr>
+                <tr>
+                  <td><strong>Distancia de la mejor ruta encontrada</strong></td>
+                  <td>$6258.98$ km</td>
+                  <td>$6294.76$ km</td>
+                </tr>
+                <tr>
+                  <td><strong>Tiempo de manejo de la mejor ruta encontrada</strong></td>
+                  <td>$77.80$ h</td>
+                  <td>$77.52$ h</td>
+                </tr>
+                <tr>
+                  <td><strong>Peajes / combustible de la mejor ruta encontrada</strong></td>
+                  <td>$7.60$ € / $590.22$ €</td>
+                  <td>$0.00$ € / $593.59$ €</td>
+                </tr>
+                <tr>
+                  <td><strong>Evaluaciones hasta alcanzar el costo final (mediana)</strong></td>
+                  <td>$12915$</td>
+                  <td>$32685$</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="apa-note"><em>Nota.</em> Presupuesto de 50.000 evaluaciones de ruta, semillas 0–29, corrida del 2026-10-13. Son las mejores rutas encontradas por heurísticas, no óptimos demostrados. Redondeo: dos decimales. La última fila se calcula sobre la curva compacta de cada corrida (11 puntos), por lo que es aproximada. Datos de <code>parte2/results/final_30seeds/summary/benchmark_summary.csv</code> (media, desviación, mejor y peor) y de <code>parte2/results/final_30seeds/raw/benchmark_runs.json</code> (componentes de la mejor corrida y curvas), repositorio RNA_20262_OptCombinatoria_TSP.</p>
         </div>
-        <figcaption><strong>Tabla 2:</strong> Rendimiento comparativo en el TSP peninsular a $v=15$ €/h (30 semillas, presupuesto de 50.000 evaluaciones).</figcaption>
 
-        <div class="figure-grid">
-          <figure>
-            <img src="assets/part2/final_cost_boxplot.png" alt="Boxplot comparativo de costos finales">
-            <figcaption><strong>Figura 4:</strong> Dispersión de costos finales en 30 ejecuciones. ACO exhibe una varianza mínima entre corridas gracias a la heurística $\eta$, mientras GA alcanza la cola inferior absoluta.</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/part2/cost_breakdown_vs_v.png" alt="Desglose de costos en función de v">
-            <figcaption><strong>Figura 5:</strong> Desglose del costo total en función del valor horario ($v \in [0, 120]$ €/h). El costo temporal escala linealmente mientras el gasto en combustible y peajes permanece constante.</figcaption>
-          </figure>
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 5</p>
+          <p class="apa-title">Costo final por semilla de ACO y GA para cada valor de la hora $v$</p>
+          <img src="assets/part2/final_cost_boxplot.png" alt="Boxplot comparativo de costos finales de ACO y GA por valor de la hora">
+          <figcaption class="apa-note"><em>Nota.</em> 30 semillas por algoritmo y valor de $v$, budget 50.000. Cada panel tiene su propio eje vertical. Con $v = 15$ €/h, ACO tiene menor dispersión entre corridas (desv. 24.48 € frente a 42.36 €), mientras GA obtiene el menor costo encontrado (1756.45 € frente a 1764.84 €). Elaborada por Juan David Robayo con <code>src/visualization/plots.py</code> a partir de <code>results/final_30seeds/raw/benchmark_runs.json</code> (repositorio RNA_20262_OptCombinatoria_TSP).</figcaption>
+        </figure>
+
+        <p>Para saber si la diferencia entre ACO y GA es sistemática o se explica por la variación entre semillas, aplicamos para cada valor de $v$ la prueba U de Mann-Whitney bilateral (Mann y Whitney, 1947) a los 30 costos finales de cada algoritmo, con la corrección de Holm (1979) para las 10 comparaciones. Como tamaño del efecto usamos la correlación biserial de rangos $r = 1 - 2U/(n_1 n_2)$, donde $U$ es el estadístico de ACO; $r$ es positiva cuando ACO tiende a dar costos menores. La <strong>Tabla 4</strong> resume las pruebas y la <strong>Figura 6</strong> muestra el costo medio de ambos algoritmos en todo el rango de $v$.</p>
+
+        <div class="apa-table">
+          <p class="apa-label">Tabla 4</p>
+          <p class="apa-title">Prueba U de Mann-Whitney de los costos finales de ACO frente a GA para cada valor de la hora (30 semillas por algoritmo)</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>$v$ (€/h)</th>
+                  <th>Mediana ACO (€)</th>
+                  <th>Mediana GA (€)</th>
+                  <th>$U$</th>
+                  <th>$p$</th>
+                  <th>$p$ (Holm)</th>
+                  <th>$r$</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>0</td>
+                  <td>598.10</td>
+                  <td>612.49</td>
+                  <td>170</td>
+                  <td>&lt; 0.001</td>
+                  <td><strong>&lt; 0.001</strong></td>
+                  <td>0.62</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>994.99</td>
+                  <td>1018.40</td>
+                  <td>180</td>
+                  <td>&lt; 0.001</td>
+                  <td><strong>&lt; 0.001</strong></td>
+                  <td>0.60</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>1410.93</td>
+                  <td>1435.30</td>
+                  <td>253</td>
+                  <td>0.004</td>
+                  <td><strong>0.029</strong></td>
+                  <td>0.44</td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>1819.61</td>
+                  <td>1816.29</td>
+                  <td>459</td>
+                  <td>0.900</td>
+                  <td>1.000</td>
+                  <td>-0.02</td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>2223.26</td>
+                  <td>2216.83</td>
+                  <td>384</td>
+                  <td>0.333</td>
+                  <td>1.000</td>
+                  <td>0.15</td>
+                </tr>
+                <tr>
+                  <td>30</td>
+                  <td>3035.62</td>
+                  <td>3028.17</td>
+                  <td>434</td>
+                  <td>0.819</td>
+                  <td>1.000</td>
+                  <td>0.04</td>
+                </tr>
+                <tr>
+                  <td>45</td>
+                  <td>4215.89</td>
+                  <td>4238.18</td>
+                  <td>384</td>
+                  <td>0.333</td>
+                  <td>1.000</td>
+                  <td>0.15</td>
+                </tr>
+                <tr>
+                  <td>60</td>
+                  <td>5433.50</td>
+                  <td>5425.39</td>
+                  <td>440</td>
+                  <td>0.888</td>
+                  <td>1.000</td>
+                  <td>0.02</td>
+                </tr>
+                <tr>
+                  <td>90</td>
+                  <td>7848.67</td>
+                  <td>7830.68</td>
+                  <td>418</td>
+                  <td>0.641</td>
+                  <td>1.000</td>
+                  <td>0.07</td>
+                </tr>
+                <tr>
+                  <td>120</td>
+                  <td>10246.99</td>
+                  <td>10364.98</td>
+                  <td>311</td>
+                  <td>0.041</td>
+                  <td>0.284</td>
+                  <td>0.31</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="apa-note"><em>Nota.</em> Prueba bilateral con $n_1 = n_2 = 30$; $U$ es el estadístico de ACO. $p$ (Holm): valor corregido por el método de Holm (1979) para 10 comparaciones; en negrita, $p$ (Holm) &lt; 0.05. $r$: correlación biserial de rangos, positiva si ACO tiende a costos menores. Medianas con dos decimales; $p$ con tres decimales, como recomienda APA. Cálculo propio con <code>scipy.stats.mannwhitneyu</code> de SciPy 1.18.1 (Virtanen et al., 2020) sobre <code>parte2/results/final_30seeds/raw/benchmark_runs.json</code> (repositorio RNA_20262_OptCombinatoria_TSP).</p>
         </div>
 
-        <h3 id="sensibilidad-v">2.4 Análisis de Sensibilidad al Valor del Tiempo: El Umbral Inexistente</h3>
-        <p>Una hipótesis común previa a los experimentos dictaba que al elevar el costo horario $v$, el algoritmo preferiría rutas alternativas que pagaran autopistas de peaje para ahorrar tiempo, cambiando la ruta preferida a partir de un valor umbral $v^*$.</p>
+        <p>ACO obtiene costos significativamente menores que GA solo con $v = 0$, $5$ y $10$ €/h ($p$ corregido $\le 0.029$, $r$ entre $0.44$ y $0.62$). Desde $v = 15$ €/h las diferencias no son significativas ($p$ corregido $\ge 0.284$) y los tamaños de efecto son pequeños ($|r| \le 0.31$). Además, ACO tiene menor desviación estándar que GA en los 10 valores de $v$, mientras que la mejor corrida de cada valor fue de GA en 6 de los 10. En resumen, ACO es más consistente y GA tiene una cola inferior más larga; la ventaja de ACO en el costo típico solo es estadísticamente sólida con valores bajos de $v$.</p>
+
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 6</p>
+          <p class="apa-title">Costo total medio de ACO y GA en función del valor de la hora</p>
+          <img src="assets/part2/cost_vs_v.png" alt="Costo total medio de ACO y GA en función de v, con media y desviación estándar">
+          <figcaption class="apa-note"><em>Nota.</em> Media ± desviación estándar de 30 semillas por algoritmo y valor de $v$, budget 50.000. Las dos curvas crecen casi en línea recta con $v$ porque el término $v \cdot T$ domina el costo (ecuación 14), y quedan muy próximas entre sí, como confirma la Tabla 4. Elaborada por Juan David Robayo con <code>src/visualization/plots.py</code> a partir de <code>results/final_30seeds/raw/benchmark_runs.json</code> y <code>results/final_30seeds/summary/benchmark_summary.csv</code> (repositorio RNA_20262_OptCombinatoria_TSP).</figcaption>
+        </figure>
+
+        <h3 id="sensibilidad-v">2.5 Análisis de Sensibilidad al Valor del Tiempo: Sin Umbral Observado</h3>
+        <p>Una hipótesis común previa a los experimentos dictaba que al elevar el costo horario $v$, el algoritmo preferiría rutas alternativas que pagaran autopistas de peaje para ahorrar tiempo, cambiando la ruta preferida a partir de un valor umbral $v^*$. La <strong>Figura 7</strong> muestra cómo cambian, según $v$, las horas de viaje, los peajes y el combustible de las rutas encontradas.</p>
+
+        <figure class="apa-figure">
+          <p class="apa-label">Figura 7</p>
+          <p class="apa-title">Desglose de la ruta encontrada según el valor de la hora (media ± desviación estándar de 30 semillas)</p>
+          <img src="assets/part2/cost_breakdown_vs_v.png" alt="Horas de viaje, peajes y combustible de la ruta encontrada en función de v">
+          <figcaption class="apa-note"><em>Nota.</em> $v \in [0, 120]$ €/h, budget 50.000. Las horas y el combustible varían poco con $v$ (combustible medio entre 598.49 € y 618.24 €), y el peaje medio va de 0.00 € a 19.33 €, condicionado a la matriz de peajes provisional. Elaborada por Juan David Robayo con <code>src/visualization/plots.py</code> a partir de <code>results/final_30seeds/raw/benchmark_runs.json</code> y <code>results/final_30seeds/summary/benchmark_summary.csv</code> (repositorio RNA_20262_OptCombinatoria_TSP).</figcaption>
+        </figure>
 
         <p>Para cualquier ruta cerrada fija $R$, su costo en función de $v$ describe una línea recta perfecta:</p>
-        $$J_R(v) = T_R \cdot v + K_R \quad \text{donde} \quad K_R = P_R + F_R$$
+        $$J_R(v) = T_R \cdot v + K_R \quad \text{donde} \quad K_R = P_R + F_R \tag{19}$$
 
         <p>El cruce teórico entre dos rutas candidatas $A$ y $B$ vendría dado por:</p>
-        $$v^* = \frac{K_B - K_A}{T_A - T_B}$$
+        $$v^* = \frac{K_B - K_A}{T_A - T_B} \tag{20}$$
 
         <div class="callout info">
-          <div class="callout-title">💡 El Hallazgo Clave: Dominancia Estricta de Pareto</div>
-          En las 558 ejecuciones completas evaluadas a lo largo de $v \in [0, 120]$ €/h, <strong>no se detectó ningún umbral de cruce</strong>. 
+          <div class="callout-title">💡 Observación: una ruta encontrada domina a las demás encontradas</div>
+          El benchmark tiene 600 corridas (30 semillas × 10 valores de $v$ entre 0 y 120 €/h × 2 algoritmos), que produjeron <strong>558 rutas distintas</strong> (contando como iguales las rotaciones de un mismo ciclo). Entre esas rutas candidatas <strong>no se observó ningún umbral de cruce</strong>.
           <br><br>
-          La mejor ruta descubierta por el Algoritmo Genético (semilla 23, con $T = 76.80$ h, $K = 584.51$ € y $6198.4$ km) <strong>dominó en el sentido de Pareto a todas las demás rutas</strong>: obtuvo simultáneamente el menor tiempo total ($T$) y el menor costo no temporal de combustible y peajes ($K$). 
+          La mejor ruta encontrada la halló el Algoritmo Genético con $v = 45$ €/h y semilla 23 ($T = 76.80$ h, $K = 584.51$ € con 0.00 € de peajes, $6198.43$ km). De las 600 corridas, es la que tiene a la vez el menor tiempo total ($T$) y el menor costo no temporal ($K$), ambos estrictamente menores que los de las otras 599.
           <br><br>
-          Al poseer a la vez la menor pendiente ($T_A < T_B$) y el menor intercepto ($K_A < K_B$), su recta se sitúa estrictamente por debajo de todas las competidoras para cualquier $v \ge 0$. La ruta óptima para un conductor sin afán ($v=0$) es idéntica a la de un servicio express ($v=120$).
+          Como tiene la menor pendiente y el menor intercepto en la ecuación 19, su recta $J(v)$ queda por debajo de las de todas las demás rutas encontradas para cualquier $v \ge 0$, y la ecuación 20 no da ningún cruce con $v^* \ge 0$. Por ejemplo, recalculada a $v = 15$ €/h costaría 1736.50 €, menos que la mejor corrida a ese valor (1756.45 €, Tabla 3), lo que muestra que ninguna corrida con $v = 15$ la encontró. Esto no prueba que sea la ruta de menor costo posible. Además depende de la matriz de peajes provisional (solo 8 de 2162 arcos con peaje): con peajes completos podría aparecer un umbral. Datos de <code>parte2/results/final_30seeds/raw/benchmark_runs.json</code> (600 corridas, budget 50.000).
         </div>
       </section>
 
-      <!-- SECCIÓN 3: CACERÍA DE ALUCINACIONES -->
+      <!-- SECCIÓN 3: DISCUSIÓN -->
+      <section id="discusion">
+        <h2>3. Discusión</h2>
+
+        <h3 id="discusion-gd-heuristicas">3.1 ¿Qué aportó el descenso por gradiente y qué aportaron las heurísticas?</h3>
+        <p>Respondemos con tres criterios: el valor final de la función objetivo (Tabla 1), el número de evaluaciones (Tabla 2) y la geometría de cada función (Sección 1.1).</p>
+
+        <p><strong>Valor final.</strong> GD no alcanzó el umbral de éxito en ninguna de las cuatro configuraciones (0/30 en todas). Sus mejores valores fueron $2.79 \times 10^{-2}$ y $0.10$ en Rosenbrock 2D y 3D, y $1.99$ y $4.97$ en Rastrigin 2D y 3D. Las heurísticas sí lo alcanzaron con frecuencia, pero no de manera uniforme. DE tuvo 100% de éxito en tres configuraciones y 83.3% en Rastrigin 3D. PSO tuvo 100% en Rosenbrock 2D y en Rastrigin 2D, pero solo 6.7% en Rosenbrock 3D. AE fue el más débil en Rosenbrock (16.7% y 6.7%) y de los mejores en Rastrigin (100% y 96.7%). Ningún método dominó en todas las configuraciones.</p>
+
+        <p><strong>Evaluaciones.</strong> En Rosenbrock, GD gastó prácticamente todo el presupuesto (9996 y 9997 evaluaciones equivalentes, es decir, 1999 y 1428 pasos de costo $2n + 1$). En Rastrigin se detuvo mucho antes, en torno a 295 pasos (1475.67 y 2081.80 evaluaciones equivalentes de media, el 15% y el 21% del presupuesto), porque llegó a un punto con $\lVert \nabla f \rVert \le 10^{-8}$. Las metaheurísticas consumieron siempre las 10.000 evaluaciones, porque no se detienen al alcanzar el umbral. Por eso estos datos no permiten afirmar cuántas evaluaciones necesitó cada heurística para tener éxito; esa comparación queda como trabajo pendiente.</p>
+
+        <p><strong>Geometría: Rosenbrock (mal condicionamiento).</strong> Cerca del mínimo la función es localmente convexa (su Hessiano es definido positivo), así que el problema de GD no son los mínimos locales sino el condicionamiento. Con paso fijo, el descenso solo es estable si $\alpha &lt; 2/\lambda_{\max}$, y el avance a lo largo del fondo del valle es proporcional a $\alpha\,\lambda_{\min}$. En 2D, $2/\lambda_{\max} \approx 0.0020$ y el $\alpha = 0.0002$ elegido cumple esa condición, pero $\alpha\,\lambda_{\min} \approx 8.0 \times 10^{-5}$. Con el modelo cuadrático local en $(1, 1)$, en los 1999 pasos disponibles el error en la dirección del valle solo se reduce a un factor $(1 - \alpha\lambda_{\min})^{1999} \approx 0.85$; harían falta del orden de $1/(\alpha\lambda_{\min}) \approx 12\,500$ pasos para reducirlo en un factor $e$. En 3D, el Hessiano en $(1, 1, 1)$ tiene $\kappa \approx 2950$ y el factor correspondiente en 1428 pasos es $\approx 0.87$. Esto explica cuantitativamente por qué GD se acerca al valle y luego avanza tan despacio (Figura 1). Entre las heurísticas, DE resolvió Rosenbrock en 2D y 3D (Figura 2), mientras PSO y AE empeoraron al pasar a 3D; la explicación geométrica de la Sección 1.5 para esa diferencia es una hipótesis que no pusimos a prueba.</p>
+
+        <p><strong>Geometría: Rastrigin (multimodalidad).</strong> Cada uno de los $11^n$ mínimos locales está en una región localmente convexa, de modo que GD converge de forma rápida y precisa al mínimo de la cuenca donde cae $\mathbf{x}_0$, y ahí se detiene. Si la cuenca del mínimo global es aproximadamente $(-0.5, 0.5)^n$, la probabilidad de empezar en ella es del 0.95% en 2D y del 0.09% en 3D, lo que da apenas un 25% (2D) y un 3% (3D) de probabilidad de obtener al menos un éxito en 30 corridas. El 0/30 observado es coherente con esa estimación. Las heurísticas, al muestrear muchas cuencas a la vez, encontraron el mínimo global en el 83.3% a 100% de las corridas.</p>
+
+        <div class="callout info">
+          <div class="callout-title">💡 Síntesis</div>
+          El <strong>descenso por gradiente</strong> aportó convergencia local rápida y precisa, con un criterio de parada verificable ($\lVert \nabla f \rVert \le 10^{-8}$), donde la función es localmente convexa. No aportó exploración global (Rastrigin) ni robustez frente al mal condicionamiento con paso fijo (Rosenbrock). Las <strong>heurísticas</strong> aportaron exploración global y, en el caso de DE, avance a lo largo del valle mal condicionado, a cambio de gastar todo el presupuesto sin usar derivadas. Una combinación natural sería usar una heurística para ubicar la cuenca y GD para refinar; no la evaluamos en este trabajo.
+        </div>
+
+        <h3 id="discusion-tsp">3.2 El problema del viajero: ACO frente a GA y el valor de la hora</h3>
+        <p>Con el mismo presupuesto de 50.000 evaluaciones, ACO fue más consistente que GA: tuvo menor dispersión en todos los valores de $v$ (Figura 5) y costos significativamente menores con $v = 0$, $5$ y $10$ €/h (Tabla 4). GA obtuvo la mejor corrida en 6 de los 10 valores de $v$, incluida la mejor ruta de todo el benchmark. Desde $v = 15$ €/h la diferencia entre ambos no es estadísticamente significativa (Tabla 4 y Figura 6).</p>
+        <p>Sobre la pregunta del enunciado, entre las 558 rutas encontradas no se observó un valor de la hora a partir del cual cambie la ruta preferida (Sección 2.5): una sola ruta tiene a la vez el menor tiempo y el menor costo fijo. Que esa ruta apareciera solo en una de las 600 corridas (GA, $v = 45$ €/h) indica que las heurísticas todavía no convergen a la misma solución en cada $v$. Por eso la ausencia de umbral es una observación sobre las rutas encontradas, no una demostración, y está condicionada a la matriz de peajes provisional (Sección 2.3).</p>
+      </section>
+
+      <!-- SECCIÓN 4: CACERÍA DE ALUCINACIONES -->
       <section id="alucinaciones">
-        <h2>3. Cacería de Alucinaciones en Modelos de Inteligencia Artificial</h2>
-        <p>El uso acrítico de Modelos de Lenguaje Grande (LLMs) en ingeniería representa un riesgo grave cuando no se cuenta con verificación experimental rigurosa. Durante el desarrollo del proyecto, sometimos a auditoría las propuestas generadas por IA, detectando <strong>6 alucinaciones técnicas críticas</strong> que fueron desmentidas mediante demostraciones matemáticas y pruebas de software:</p>
+        <h2>4. Cacería de Alucinaciones en Modelos de Inteligencia Artificial</h2>
+        <p>Los hallazgos de esta sección (<strong>Tabla 5</strong>) reproducen, sin añadir ni completar nada, el registro <code>docs/hallucination_log.md</code> del repositorio de la Parte 1. Allí cada hallazgo trae el prompt literal, la respuesta de la IA, cómo se sospechó, la evidencia, la corrección y la lección aprendida.</p>
 
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Alucinación Generada por IA</th>
-                <th>Refutación Técnica y Prueba en Código</th>
-                <th>Corrección Implementada</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td><em>"GD con learning rate microscópico siempre converge en Rastrigin"</em></td>
-                <td>Rastrigin tiene 121 mínimos locales en 2D. Con $\alpha$ pequeño, la dinámica es determinista y queda encerrada en el pozo de inicio (0% de éxito).</td>
-                <td>Uso mandatorio de metaheurísticas estocásticas globales (PSO, DE, AE).</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td><em>"La función Rosenbrock es cuasi-convexa en bajas dimensiones"</em></td>
-                <td>El Hessiano tiene autovalores de signo variable y para $n \ge 4$ aparece un segundo mínimo local en $(-1, 1, \dots, 1)$.</td>
-                <td>Análisis de curvatura Hessiana ($\kappa \approx 2508$) y comprobación de no convexidad.</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td><em>"La matriz de distancias por carretera es simétrica ($D_{ij} = D_{ji}$)"</em></td>
-                <td>Sentidos únicos, circunvalaciones y enlaces desvían rutas. OSRM demostró discrepancias de kilómetros entre ida y vuelta.</td>
-                <td>Construcción de matriz completa asimétrica dirigida ($47 \times 46 = 2162$ arcos).</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td><em>"España tiene 52 capitales accesibles en coche para el TSP"</em></td>
-                <td>Baleares, Canarias, Ceuta y Melilla son físicamente inaccesibles sin trasbordo marítimo o aéreo.</td>
-                <td>Exclusión canónica documentada, fijando el grafo en exactamente 47 capitales peninsulares.</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td><em>"Los peajes en España aplican una tarifa plana por kilómetro"</em></td>
-                <td>La mayoría de autopistas fueron liberadas por el Estado; solo 8 tramos de los 2162 pares conservan peaje real concesionado.</td>
-                <td>Matriz de peajes selectiva por tramo con política de integridad estricta en YAML.</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td><em>"Un paso de GD con derivadas numéricas cuenta como 1 evaluación"</em></td>
-                <td>Aproximar el gradiente central en $\mathbb{R}^n$ requiere $2n$ llamadas a la función más $1$ para el nuevo punto ($2n+1$).</td>
-                <td>Implementación estricta del modelo de costo $E_{eq} = N_f + 2n \cdot N_{grad}$ en el tracker.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="apa-table">
+          <p class="apa-label">Tabla 5</p>
+          <p class="apa-title">Hallazgos registrados en la cacería de alucinaciones (Parte 1)</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Hallazgo (título en el registro)</th>
+                  <th>Categoría</th>
+                  <th>Evidencia registrada</th>
+                  <th>Corrección registrada</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>H-01</td>
+                  <td>DOI inexistente en una referencia</td>
+                  <td>Bibliografía</td>
+                  <td>El DOI <code>10.1016/S0167-8191(08)80052-3</code> de Mühlenbein et al. (1991) da HTTP 404 en Crossref; <code>10.1016/S0167-8191(05)80052-3</code> da HTTP 200.</td>
+                  <td>DOI cambiado a <code>10.1016/S0167-8191(05)80052-3</code>.</td>
+                </tr>
+                <tr>
+                  <td>H-02</td>
+                  <td>Se declaró "listo" un GD que rebota entre las esquinas del dominio</td>
+                  <td>Conceptos / Código</td>
+                  <td>Rosenbrock 2D, semilla 42, lr = 0.001: el iterado oscila entre $(-5, 10)$ y $(10, 10)$ ($f = 22536$ y $f = 810081$). Piloto de 30 semillas: con lr = 1e-3 la mediana de <code>best_f</code> es ~1.8·10⁴.</td>
+                  <td>El learning rate se llevó a decisión del equipo tras pilotos; se agregó la prueba <code>test_every_iterate_within_bounds</code>.</td>
+                </tr>
+                <tr>
+                  <td>H-03</td>
+                  <td>Prueba unitaria que no puede fallar</td>
+                  <td>Código</td>
+                  <td>La aserción <code>best_f &lt;= history[0]["best_f"]</code> se cumple por construcción: un GD con lr = 0 también la pasa.</td>
+                  <td>Reemplazada por <code>test_converges_on_convex_quadratic</code>, <code>test_unstable_step_does_not_converge_on_quadratic</code> y <code>test_single_step_matches_update_rule</code>.</td>
+                </tr>
+                <tr>
+                  <td>H-04</td>
+                  <td>Conteo de evaluaciones: gradiente cobrado sin usarse</td>
+                  <td>Código (conteo de evaluaciones)</td>
+                  <td>Con presupuesto 10 000 en 2D la prueba esperaba <code>N_grad = 1999</code> y el código dio <code>N_grad = 2000</code>: cobraba un gradiente sin poder dar el paso.</td>
+                  <td>Solo se inicia una iteración si cabe completa (<code>2n + 1</code>); prueba <code>test_budget_used_exactly</code>.</td>
+                </tr>
+                <tr>
+                  <td>H-05</td>
+                  <td>"Reproducible en un clon limpio", pero las pruebas no se encontraban</td>
+                  <td>Código</td>
+                  <td><code>pytest -q</code> fallaba con <code>ModuleNotFoundError: No module named 'src'</code>; solo <code>python -m pytest</code> funcionaba.</td>
+                  <td><code>pyproject.toml</code> con <code>pythonpath = ["."]</code>.</td>
+                </tr>
+                <tr>
+                  <td>H-06</td>
+                  <td>La IA inventó una bitácora de alucinaciones y dijo haber leído documentos que no leyó</td>
+                  <td>Conceptos (integridad de la información)</td>
+                  <td>El historial de la conversación registra los dos PDF adjuntos como omitidos; los prompts de los "hallazgos" generados no aparecen en ningún historial. (Esta evidencia está en el historial del asistente, no en el repositorio.)</td>
+                  <td>Se borró la bitácora inventada y se reemplazó por el registro actual.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="apa-note"><em>Nota.</em> El prompt literal, la respuesta de la IA y la lección de cada hallazgo están en el registro. Datos de <code>parte1/docs/hallucination_log.md</code> (repositorio RNA_20262_OptNumerica), hallazgos H-01 a H-06.</p>
         </div>
-        <figcaption><strong>Tabla 3:</strong> Registro auditado de alucinaciones en IA refutadas y corregidas durante el ciclo de vida del software.</figcaption>
+
+        <h3 id="verificaciones">4.1 Verificaciones Realizadas y sus Resultados</h3>
+        <p>El enunciado pide, si no se reúnen cinco hallazgos genuinos, documentar las verificaciones que se hicieron y sus resultados. La <strong>Tabla 6</strong> las reúne. Las filas 1 a 5 vienen de la tabla "Verificaciones realizadas sin encontrar error" del registro de la Parte 1 (3 de octubre de 2026). Las filas 6 a 10 corresponden a la revisión del repositorio y de un borrador de este artículo hecha el 15 y 16 de octubre de 2026 sobre clones limpios, con apoyo de un asistente de IA. Una verificación con resultado negativo no es una alucinación y no se presenta como tal.</p>
+
+        <div class="apa-table">
+          <p class="apa-label">Tabla 6</p>
+          <p class="apa-title">Verificaciones realizadas, método y resultado</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Qué se verificó</th>
+                  <th>Cómo</th>
+                  <th>Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Gradiente analítico de Rosenbrock (ecuaciones 2 y 3), incluido el término acoplado, con $n = 2, 3, 5$</td>
+                  <td>Diferencias centrales en 50 puntos de $[-5, 10]^n$, <code>rtol = 1e-6</code></td>
+                  <td>Correcto</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Gradiente analítico de Rastrigin (ecuación 4), signo de $+20\pi\sin(2\pi x)$</td>
+                  <td>Diferencias centrales en 50 puntos de $[-5.12, 5.12]^n$; control negativo con el signo invertido</td>
+                  <td>Correcto; la versión con el signo invertido es rechazada</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Mínimos globales $f(1, \dots, 1) = 0$ y $f(0, \dots, 0) = 0$</td>
+                  <td>Evaluación directa</td>
+                  <td>Correcto</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Dominios $[-5, 10]$ y $[-5.12, 5.12]$</td>
+                  <td>Comparación con Surjanovic y Bingham (2013), consultado el 3 y el 16 de octubre de 2026</td>
+                  <td>Coinciden con la fuente</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>DOI de Rosenbrock (1960)</td>
+                  <td>Consulta en Crossref</td>
+                  <td>Existe</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Número de mínimos locales de Rastrigin, $\kappa$ de Rosenbrock en $(1, 1)$ y cota $L$</td>
+                  <td>Búsqueda de mínimos en una malla de $2 \times 10^6$ puntos de $[-5.12, 5.12]$; autovalores del Hessiano</td>
+                  <td>11 mínimos por eje ($11^n$), $\kappa \approx 2508$, $L \approx 396.78$: correcto</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>Cifras de la tabla del TSP en el borrador</td>
+                  <td>Comparación con <code>benchmark_summary.csv</code> y <code>benchmark_runs.json</code></td>
+                  <td>El mejor costo de ACO (1748.20 €) y las medias no estaban en los archivos; el "1736.50 €" era una ruta hallada con $v = 45$ recalculada a $v = 15$. Corregido en la Tabla 3 y la Sección 2.5</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>Dominancia de la mejor ruta encontrada (Sección 2.5)</td>
+                  <td>Comparación de $T$ y $K$ en las 600 corridas del benchmark</td>
+                  <td>Menor $T$ y menor $K$ de forma estricta: confirmado entre las rutas encontradas</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>Precio de la gasolina 95 en España usado en el modelo (1.849 €/L)</td>
+                  <td>Histórico oficial del Weekly Oil Bulletin (Comisión Europea, 2026), hoja "Prices with taxes", fecha 2026-10-05, columna de España</td>
+                  <td>1849.10 € por 1000 L: coincide</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>Consumo WLTP del vehículo usado en el modelo (5.1 L/100 km)</td>
+                  <td>Ficha de la versión Reference 2024 (km77.com, s. f.)</td>
+                  <td>5.1 L/100 km combinado y 118 g/km de CO₂: coincide</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="apa-note"><em>Nota.</em> Filas 1–5: <code>parte1/docs/hallucination_log.md</code>, sección "Verificaciones realizadas sin encontrar error". Filas 6–10: revisión del 15 y 16 de octubre de 2026 sobre los repositorios RNA_20262_OptNumerica y RNA_20262_OptCombinatoria_TSP.</p>
+        </div>
       </section>
 
-      <!-- SECCIÓN 4: REPRODUCIBILIDAD -->
+      <!-- SECCIÓN 5: REPRODUCIBILIDAD -->
       <section id="reproducibilidad">
-        <h2>4. Reproducibilidad y Código Abierto</h2>
-        <p>Ambos repositorios fueron diseñados siguiendo estándares de ingeniería de software científico, con separación modular, tipado estricto, pruebas automatizadas en <code>pytest</code> y configuración desacoplada en archivos YAML:</p>
+        <h2>5. Reproducibilidad y Código Abierto</h2>
+        <p>Ambos repositorios fueron diseñados siguiendo estándares de ingeniería de software científico, con separación modular, pruebas automatizadas en <code>pytest</code> y configuración desacoplada en archivos YAML:</p>
 
         <pre><code># ====================================================================
 # PARTE 1: OPTIMIZACIÓN NUMÉRICA (Rosenbrock & Rastrigin)
@@ -1052,28 +1656,60 @@ git clone https://github.com/jcuartasl/RNA_20262_OptCombinatoria_TSP.git
 cd RNA_20262_OptCombinatoria_TSP
 pip install -r requirements.txt
 
-# 1. Ejecutar la suite de 216 pruebas unitarias:
+# 1. Ejecutar la suite de pruebas (216 pasan y 3 se omiten):
 pytest -v
 
-# 2. Ejecutar la Demo de Sustentación en Vivo (< 25 segundos):
-# Genera los mapas de carreteras, curvas de convergencia, boxplots y el GIF animado:
+# 2. Ejecutar la Demo de Sustentación en Vivo (&lt; 2 minutos; 31 s medidos en el README):
+# Genera el mapa esquemático de la ruta, curvas de convergencia, boxplots y el GIF animado:
 python -m src.experiments.demo</code></pre>
       </section>
 
-      <!-- SECCIÓN 5: REFERENCIAS APA 7 -->
+      <!-- SECCIÓN 6: VIDEOS DE CONTRIBUCIÓN INDIVIDUAL -->
+      <section id="videos">
+        <h2>6. Videos de Contribución Individual</h2>
+        <p>Cada integrante explica en un video sus aportes específicos al trabajo, con evidencia concreta (código, commits, figuras o secciones de este artículo). Los videos están en la carpeta compartida del equipo en Google Drive, que se puede explorar aquí abajo o abrir en una pestaña nueva.</p>
+
+        <div class="video-folder">
+          <iframe src="https://drive.google.com/embeddedfolderview?id=16p0YkCYrqMRXZRs3fMqdEwgczrNdkNTp#grid" title="Carpeta de Google Drive con los videos de contribución individual" loading="lazy"></iframe>
+        </div>
+        <p><a class="btn-repo" href="https://drive.google.com/drive/folders/16p0YkCYrqMRXZRs3fMqdEwgczrNdkNTp?usp=drive_link" target="_blank" rel="noopener">🎬 Abrir la carpeta de videos en Google Drive</a></p>
+
+        <!--
+          Para incrustar cada video por separado: en Drive, clic derecho sobre el video > Compartir > Copiar enlace.
+          El enlace tiene la forma https://drive.google.com/file/d/ID_DEL_ARCHIVO/view?usp=sharing.
+          Copie ID_DEL_ARCHIVO en el bloque de abajo, uno por integrante, y borre los comentarios.
+
+        <figure class="apa-figure">
+          <p class="apa-label">Video 1</p>
+          <p class="apa-title">Nombre del integrante: rol y aportes principales</p>
+          <div class="video-wrap">
+            <iframe src="https://drive.google.com/file/d/ID_DEL_ARCHIVO/preview" title="Video 1: Nombre del integrante" allow="autoplay" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <figcaption class="apa-note"><em>Nota.</em> Duración m:ss. Muestra: commit, archivo o figura que se explica.</figcaption>
+        </figure>
+        -->
+      </section>
+
+      <!-- SECCIÓN 7: REFERENCIAS APA 7 -->
       <section id="referencias" class="references">
-        <h2>5. Referencias Bibliográficas (APA 7.ª Edición)</h2>
-        <ol>
-          <li>Comisión Europea. (2026, 5 de octubre). <em>Weekly Oil Bulletin: Consumer prices of petroleum products inclusive of duties and taxes (Euro-super 95, Spain)</em>. Directorate-General for Energy. <a href="https://ec.europa.eu/energy/data-analysis/weekly-oil-bulletin_en" target="_blank" rel="noopener">https://ec.europa.eu/energy/data-analysis/weekly-oil-bulletin_en</a></li>
-          <li>Dorigo, M., & Stützle, T. (2004). <em>Ant Colony Optimization</em>. MIT Press. <a href="https://doi.org/10.7551/mitpress/1290.001.0001" target="_blank" rel="noopener">https://doi.org/10.7551/mitpress/1290.001.0001</a></li>
-          <li>Eberhart, R., & Kennedy, J. (1995). A new optimizer using particle swarm theory. <em>Proceedings of the Sixth International Symposium on Micro Machine and Human Science (MHS'95)</em>, 39–43. <a href="https://doi.org/10.1109/MHS.1995.494215" target="_blank" rel="noopener">https://doi.org/10.1109/MHS.1995.494215</a></li>
-          <li>Eiben, A. E., & Smith, J. E. (2015). <em>Introduction to Evolutionary Computing</em> (2.ª ed.). Springer. <a href="https://doi.org/10.1007/978-3-662-44874-8" target="_blank" rel="noopener">https://doi.org/10.1007/978-3-662-44874-8</a></li>
-          <li>Instituto para la Diversificación y Ahorro de la Energía [IDAE]. (2024). <em>Base de datos de consumo de carburantes y emisiones de CO2 en coches nuevos: Ficha técnica SEAT Ibiza 1.0 TSI 95 CV Reference</em>. Ministerio para la Transición Ecológica y el Reto Demográfico. <a href="https://coches.idae.es" target="_blank" rel="noopener">https://coches.idae.es</a></li>
-          <li>Luxen, D., & Vetter, C. (2011). Real-time routing with OpenStreetMap data. <em>Proceedings of the 19th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems</em>, 513–516. <a href="https://doi.org/10.1145/2093973.2094062" target="_blank" rel="noopener">https://doi.org/10.1145/2093973.2094062</a></li>
-          <li>Rastrigin, L. A. (1974). <em>Extremal control systems</em>. Theoretical Foundations of Engineering Cybernetics Series, Nauka.</li>
-          <li>Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. <em>The Computer Journal</em>, 3(3), 175–184. <a href="https://doi.org/10.1093/comjnl/3.3.175" target="_blank" rel="noopener">https://doi.org/10.1093/comjnl/3.3.175</a></li>
-          <li>Storn, R., & Price, K. (1997). Differential Evolution – A simple and efficient heuristic for global optimization over continuous spaces. <em>Journal of Global Optimization</em>, 11(4), 341–359. <a href="https://doi.org/10.1023/A:1008202821328" target="_blank" rel="noopener">https://doi.org/10.1023/A:1008202821328</a></li>
-        </ol>
+        <h2>7. Referencias</h2>
+        <ul class="apa-references">
+          <li>Comisión Europea. (2026). <em>Weekly oil bulletin: Price developments 2005 onwards</em> [Conjunto de datos]. Dirección General de Energía. Recuperado el 16 de octubre de 2026, de <a href="https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en" target="_blank" rel="noopener">https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en</a></li>
+          <li>Dorigo, M., y Stützle, T. (2004). <em>Ant colony optimization</em>. MIT Press. <a href="https://doi.org/10.7551/mitpress/1290.001.0001" target="_blank" rel="noopener">https://doi.org/10.7551/mitpress/1290.001.0001</a></li>
+          <li>Eberhart, R., y Kennedy, J. (1995). A new optimizer using particle swarm theory. En <em>MHS'95: Proceedings of the Sixth International Symposium on Micro Machine and Human Science</em> (pp. 39–43). IEEE. <a href="https://doi.org/10.1109/MHS.1995.494215" target="_blank" rel="noopener">https://doi.org/10.1109/MHS.1995.494215</a></li>
+          <li>Eiben, A. E., y Smith, J. E. (2015). <em>Introduction to evolutionary computing</em> (2.ª ed.). Springer. <a href="https://doi.org/10.1007/978-3-662-44874-8" target="_blank" rel="noopener">https://doi.org/10.1007/978-3-662-44874-8</a></li>
+          <li>Holm, S. (1979). A simple sequentially rejective multiple test procedure. <em>Scandinavian Journal of Statistics</em>, <em>6</em>(2), 65–70. <a href="https://www.jstor.org/stable/4615733" target="_blank" rel="noopener">https://www.jstor.org/stable/4615733</a></li>
+          <li>km77.com. (s. f.). <em>SEAT Ibiza 1.0 TSI 70 kW (95 CV) Reference (2024-2024): Precio y ficha técnica</em>. Recuperado el 16 de octubre de 2026, de <a href="https://www.km77.com/coches/seat/ibiza/2021/5-puertas/estandar/ibiza-10-tsi-70-kw-95-cv-reference/datos" target="_blank" rel="noopener">https://www.km77.com/coches/seat/ibiza/2021/5-puertas/estandar/ibiza-10-tsi-70-kw-95-cv-reference/datos</a></li>
+          <li>Luxen, D., y Vetter, C. (2011). Real-time routing with OpenStreetMap data. En <em>Proceedings of the 19th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems</em> (pp. 513–516). Association for Computing Machinery. <a href="https://doi.org/10.1145/2093973.2094062" target="_blank" rel="noopener">https://doi.org/10.1145/2093973.2094062</a></li>
+          <li>Mann, H. B., y Whitney, D. R. (1947). On a test of whether one of two random variables is stochastically larger than the other. <em>The Annals of Mathematical Statistics</em>, <em>18</em>(1), 50–60. <a href="https://doi.org/10.1214/aoms/1177730491" target="_blank" rel="noopener">https://doi.org/10.1214/aoms/1177730491</a></li>
+          <li>Mühlenbein, H., Schomisch, M., y Born, J. (1991). The parallel genetic algorithm as function optimizer. <em>Parallel Computing</em>, <em>17</em>(6–7), 619–632. <a href="https://doi.org/10.1016/S0167-8191(05)80052-3" target="_blank" rel="noopener">https://doi.org/10.1016/S0167-8191(05)80052-3</a></li>
+          <li>Natural Earth. (s. f.). <em>Admin 0 – Countries</em> (escala 1:10m, versión 5.1.2) [Conjunto de datos]. Recuperado el 16 de octubre de 2026, de <a href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/" target="_blank" rel="noopener">https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/</a></li>
+          <li>Rastrigin, L. A. (1974). <em>Sistemy ekstremal'nogo upravleniya</em> [Sistemas de control extremal]. Nauka.</li>
+          <li>Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. <em>The Computer Journal</em>, <em>3</em>(3), 175–184. <a href="https://doi.org/10.1093/comjnl/3.3.175" target="_blank" rel="noopener">https://doi.org/10.1093/comjnl/3.3.175</a></li>
+          <li>Storn, R., y Price, K. (1997). Differential evolution – A simple and efficient heuristic for global optimization over continuous spaces. <em>Journal of Global Optimization</em>, <em>11</em>(4), 341–359. <a href="https://doi.org/10.1023/A:1008202821328" target="_blank" rel="noopener">https://doi.org/10.1023/A:1008202821328</a></li>
+          <li>Surjanovic, S., y Bingham, D. (2013). <em>Virtual library of simulation experiments: Test functions and datasets</em>. Simon Fraser University. Recuperado el 16 de octubre de 2026, de <a href="https://www.sfu.ca/~ssurjano/" target="_blank" rel="noopener">https://www.sfu.ca/~ssurjano/</a></li>
+          <li>Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., . . . Vázquez-Baeza, Y. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. <em>Nature Methods</em>, <em>17</em>(3), 261–272. <a href="https://doi.org/10.1038/s41592-019-0686-2" target="_blank" rel="noopener">https://doi.org/10.1038/s41592-019-0686-2</a></li>
+        </ul>
       </section>
     </article>
   </div>

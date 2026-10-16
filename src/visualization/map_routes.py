@@ -14,6 +14,29 @@ from ..data.road_matrix import load_cities
 ROOT = Path(__file__).resolve().parents[2]
 AVISO = "Segmentos rectos: representación esquemática, no la geometría de las carreteras."
 NOMBRES = {"aco": "ACO", "genetic": "GA"}
+# Natural Earth 1:10m (dominio público), guardado en el repo para no depender de la red; ver properties del archivo
+CONTORNO = ROOT / "data" / "geo" / "spain_peninsula.geojson"
+
+
+def cargar_contorno(path=CONTORNO):
+    """Anillos [lon, lat] del contorno de España peninsular, o [] si el archivo no está."""
+    path = Path(path)
+    if not path.exists():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    rings = []
+    for feature in data["features"]:
+        geom = feature["geometry"]
+        polygons = geom["coordinates"] if geom["type"] == "MultiPolygon" else [geom["coordinates"]]
+        rings += [np.asarray(polygon[0], dtype=float) for polygon in polygons]
+    return rings
+
+
+def dibujar_contorno(ax, rings):
+    """Silueta de fondo, debajo de rutas y ciudades; es un parche, así que no se suma a ax.lines."""
+    for i, ring in enumerate(rings):
+        ax.fill(ring[:, 0], ring[:, 1], facecolor="#eef2f6", edgecolor="#8a96a3", lw=0.8, zorder=0,
+                label="España peninsular (Natural Earth)" if i == 0 else None)
 
 
 def cargar_registro(path, optimizer=None, hourly_value=None, seed=None):
@@ -40,6 +63,7 @@ def cargar_ciudades(record):
 def preparar_mapa(ax, cities, labels="names"):
     """Parte fija del mapa (ciudades, etiquetas, ejes y aviso); el GIF la dibuja una sola vez."""
     lon, lat, fig = cities["lon"].to_numpy(), cities["lat"].to_numpy(), ax.figure
+    dibujar_contorno(ax, cargar_contorno())
     ax.scatter(lon, lat, s=14, color="#333333", zorder=3)
     if labels != "none":
         for i, (x, y, name) in enumerate(zip(lon, lat, cities["name"])):

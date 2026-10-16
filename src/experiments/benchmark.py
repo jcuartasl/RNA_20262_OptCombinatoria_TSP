@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 from ..costs.sensitivity import sweep
-from .export import guardar_json, metadatos_dataset
+from .export import NOTA_TOLLS_COMPLETE, guardar_json, hashes_entradas, metadatos_dataset
 from .run_tsp import OPTIMIZERS, ROOT, cargar_componentes, leer_yaml
 
 
@@ -84,7 +84,9 @@ def main(argv=None):
         "config_file": args.config, "experiment_config": cfg, "seeds": seeds, "hourly_values_eur": values,
         "budget": budget, "algo_configs": {n: c for n, (_, c) in optimizers.items()}, "toll_policy": policy,
         "provisional_tolls": policy == "provisional_zero", "tolls_complete": components.tolls_complete,
+        "tolls_complete_note": NOTA_TOLLS_COMPLETE,
         "dataset": metadatos_dataset(ROOT / cfg["dataset"]["directory"]), "vehicle": asdict(components.vehicle),
+        "input_hashes": hashes_entradas(ROOT, cfg, [path for _, path in OPTIMIZERS.values()]),
         "city_names": list(components.city_names),
     }
     raw = guardar_json({**header, "runs": runs}, ROOT / args.out / "raw" / "benchmark_runs.json")

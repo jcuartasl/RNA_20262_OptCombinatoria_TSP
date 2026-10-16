@@ -12,7 +12,7 @@ from ..costs.vehicle import load_vehicle
 from ..optimizers.aco import ACO
 from ..optimizers.common import route_cost
 from ..optimizers.genetic import GeneticOptimizer
-from .export import guardar_json, metadatos_dataset
+from .export import NOTA_TOLLS_COMPLETE, guardar_json, hashes_entradas, metadatos_dataset
 
 ROOT = Path(__file__).resolve().parents[2]
 OPTIMIZERS = {"aco": (ACO, "config/aco.yaml"), "genetic": (GeneticOptimizer, "config/genetic.yaml")}
@@ -43,7 +43,7 @@ def correr(optimizer_cls, components, hourly_value, seed, budget, algo_config, t
         "hourly_value_eur": float(hourly_value), "toll_policy": toll_policy,
         # provisional_zero rellena peajes faltantes con 0: nunca vale como resultado final
         "provisional_tolls": toll_policy == "provisional_zero", "tolls_complete": components.tolls_complete,
-        "dataset": dataset, "vehicle": asdict(components.vehicle), "city_names": list(components.city_names),
+        "tolls_complete_note": NOTA_TOLLS_COMPLETE, "dataset": dataset, "vehicle": asdict(components.vehicle), "city_names": list(components.city_names),
         **res, "totals": asdict(components.route_totals(res["best_route"])), "elapsed_s": elapsed,
     }
 
@@ -68,9 +68,13 @@ def main(argv=None):
     seed = exp["seeds"][0] if args.seed is None else args.seed
     budget = exp["budget"] if args.budget is None else args.budget
     policy = args.toll_policy or cfg["tolls"]["policy"]
-    rec = correr(cls, cargar_componentes(cfg, policy), v, seed, budget, leer_yaml(args.algo_config or algo_path),
+    algo_file = args.algo_config or algo_path
+    rec = correr(cls, cargar_componentes(cfg, policy), v, seed, budget, leer_yaml(algo_file),
                  policy, metadatos_dataset(ROOT / cfg["dataset"]["directory"]))
-    rec.update(config_file=args.config, experiment_config=cfg)
+    # los YAML de ambos optimizadores, más el --algo_config usado si es otro archivo
+    algo_files = list(dict.fromkeys([path for _, path in OPTIMIZERS.values()] + [algo_file]))
+    rec.update(config_file=args.config, experiment_config=cfg, algo_config_file=algo_file,
+               input_hashes=hashes_entradas(ROOT, cfg, algo_files))
     path = guardar_json(rec, ROOT / args.out / f"{args.optimizer}_v{float(v):g}_seed{seed}.json")
     print(f"{args.optimizer} | v={float(v):g} EUR/h | seed={seed} | costo={rec['best_cost']:.2f} EUR "
           f"| evaluaciones={rec['evaluations']} | {rec['elapsed_s']:.1f} s | {path}")
